@@ -1,0 +1,5 @@
+- FIXME: Review pinch-to-zoom algo, it could be optimized
+- FIXME: It often happens that the listview is flicked while you're trying to zoom-in
+- FIXME: graphics glitch when going back from an image (due to the sliding animation, the cached image flashes)
+- Investigate vibration of the image (is it really due to the contentX/Y being qRound()ed before set?)
+- Add change of zoom center while zooming in and changing the center at the same time 
