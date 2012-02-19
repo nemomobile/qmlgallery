@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Andrea Bernabei <and.bernabei@gmail.com>
+ * Copyright (C) 2012 Robin Burchell <robin+nemo@viroteck.net>
  *
  * You may use this file under the terms of the BSD license as follows:
  *
@@ -29,54 +29,20 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
  */
 
-import QtQuick 1.1
-import com.nokia.meego 1.0
-import QtMobility.gallery 1.1
+#ifndef FILETHUMBNAILPROVIDER_H
+#define FILETHUMBNAILPROVIDER_H
 
-Page {
-    anchors.fill: parent
+#include <QDeclarativeImageProvider>
 
-    //tools: commonTools
-
-    GridView {
-        id: grid
-        anchors.centerIn: parent
-
-        width: parent.width
-        height: parent.height
-
-        flow: GridView.LeftToRight
-        maximumFlickVelocity: 3000
-        model: gallery
-        cellHeight: 120
-        cellWidth: 120
-
-        delegate:
-            Image {
-                width: grid.cellWidth
-                height: grid.cellHeight
-                sourceSize: Qt.size(120, 120)
-                asynchronous: true
-                source: "image://nemoThumbnail/" + url
-
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: appWindow.pageStack.push(imagepage, {imageId: index, galleryModel: gallery } )
-                }
-            }
-
+class FileThumbnailImageProvider : public QDeclarativeImageProvider
+{
+public:
+    FileThumbnailImageProvider()
+        : QDeclarativeImageProvider(QDeclarativeImageProvider::Image)
+    {
     }
 
-    DocumentGalleryModel {
-        id: gallery
+    QImage requestImage(const QString &id, QSize *size, const QSize &requestedSize);
+};
 
-        rootType : DocumentGallery.Image
-        properties : [ "url", "width", "height" ]
-        filter : GalleryWildcardFilter {
-            property : "fileName";
-            value : "*.jpg";
-        }
-    }
-
-
-}
+#endif // FILETHUMBNAILPROVIDER_H
