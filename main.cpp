@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2012 Andrea Bernabei <and.bernabei@gmail.com>
+ * Copyright (C) 2012 Robin Burchell <robin+mer@viroteck.net>
  *
  * You may use this file under the terms of the BSD license as follows:
  *
@@ -40,7 +41,10 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
     QScopedPointer<QApplication> app(createApplication(argc, argv));
 
     QmlApplicationViewer viewer;
-    //viewer.setOrientation(QmlApplicationViewer::ScreenOrientationAuto);
+    viewer.setAttribute(Qt::WA_OpaquePaintEvent);
+    viewer.setAttribute(Qt::WA_NoSystemBackground);
+    viewer.viewport()->setAttribute(Qt::WA_OpaquePaintEvent);
+    viewer.viewport()->setAttribute(Qt::WA_NoSystemBackground);
     viewer.setOrientation(QmlApplicationViewer::ScreenOrientationLockPortrait);
     viewer.setMainQmlFile(QLatin1String("qml/qmlgallery/main.qml"));
     viewer.showExpanded();
