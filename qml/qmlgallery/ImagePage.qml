@@ -65,10 +65,7 @@ Page{
 
             PinchArea{
                 id: pinchImg
-                anchors.fill :rect
-
-                //width: Math.min(img.width * img.scale, imgContainer.width)
-                //height:Math.min(img.height * img.scale, imgContainer.height)
+                anchors.fill: imgContainer
 
                 //Disable the pincharea if the listview is scrolling, to avoid problems
                 enabled: !imageview.moving
@@ -92,7 +89,7 @@ Page{
                 function updateContentX(){
 
                     //Only calculate the correct ContentX if the image is wider than the screen, otherwise keep it centered (contentX = 0 in the else branch)
-                    if (width == imageview.width){
+                    if (rect.width == imageview.width){
 
                         //Anchors the image to the left
                         if (flickImg.contentX < 0){
@@ -124,7 +121,7 @@ Page{
                 function updateContentY(){
 
                     //Only calculate the correct ContentY if the image is taller than the screen, otherwise keep it centered (contentY = 0 in the else branch)
-                    if (height == imageview.height){
+                    if (rect.height == imageview.height){
 
                         //Anchors the image to the top when zooming out
                         if (flickImg.contentY < 0){
@@ -175,7 +172,7 @@ Page{
 
                     //i.e. everytime the image is wider than the screen, it should actually be
                     // img.width == imageview.width, but this condition is rarely met because of numeric error
-                    if (width == imageview.width)
+                    if (rect.width == imageview.width)
                     {
                         if (!initializedX )
                         {
@@ -189,7 +186,7 @@ Page{
 
                     }
 
-                    if (height == imageview.height)
+                    if (rect.height == imageview.height)
                     {
                         if (!initializedY)
                         {
