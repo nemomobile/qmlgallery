@@ -38,6 +38,26 @@ Page {
 
     //tools: commonTools
 
+    // baseThumbnailSize is used to request images, and display size will be <=
+    property int baseThumbnailSize: 160
+    property int thumbnailSize: 0
+    property int padding: 2
+
+    Component.onCompleted: updateThumbnailSize()
+    onWidthChanged: updateThumbnailSize()
+    onPaddingChanged: updateThumbnailSize()
+    onBaseThumbnailSizeChanged: updateThumbnailSize()
+    
+    // Calculate the thumbnail size to fit items of approximately 160px
+    // onto each row with a minimal amount of extra space. The goal is
+    // to avoid having a large unused area on the right edge.
+    function updateThumbnailSize() {
+        var itemsPerRow = Math.floor(width / baseThumbnailSize)
+        // Ideally, this would use (padding*(itemsPerRow-1)), but GridView's
+        // behavior on cellWidth requires the rightmost item to have padding.
+        thumbnailSize = Math.floor((width - padding * itemsPerRow) / itemsPerRow)
+    }
+
     GridView {
         id: grid
         anchors.centerIn: parent
@@ -48,14 +68,14 @@ Page {
         flow: GridView.LeftToRight
         maximumFlickVelocity: 3000
         model: gallery
-        cellHeight: 120
-        cellWidth: 120
+        cellHeight: thumbnailSize + padding
+        cellWidth: thumbnailSize + padding
 
         delegate:
             Image {
-                width: grid.cellWidth
-                height: grid.cellHeight
-                sourceSize: Qt.size(120, 120)
+                width: thumbnailSize
+                height: thumbnailSize
+                sourceSize: Qt.size(baseThumbnailSize, baseThumbnailSize)
                 asynchronous: true
                 source: "image://nemoThumbnail/" + url
 
