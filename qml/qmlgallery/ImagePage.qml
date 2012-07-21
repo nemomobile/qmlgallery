@@ -45,6 +45,7 @@ Page{
     ListView{
         id: imageview
         anchors.fill:parent
+        clip: true
 
         orientation: ListView.Horizontal
         highlightRangeMode: ListView.StrictlyEnforceRange
