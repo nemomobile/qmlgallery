@@ -79,8 +79,6 @@ Page{
                 property real lastScaleY: 1
                 property real deltaX: 0
                 property real deltaY: 0
-                property real preX : 0
-                property real preY : 0
                 property bool initializedX: false
                 property bool initializedY: false
                 property bool isZoomingOut: false
@@ -151,17 +149,9 @@ Page{
 
 
                 onPinchUpdated:{
-
                     //Am I zooming in or out?
                     if (pinch.scale > pinch.previousScale) isZoomingOut = false
                     else isZoomingOut = true
-
-                    //saving contentX and contentY to a temp variable, since flickable will reset them when contentHeight/Width is changed
-                    preX = flickImg.contentX
-                    preY = flickImg.contentY
-                    flickImg.contentHeight = (img.height * img.scale); flickImg.contentWidth = (img.width * img.scale)
-                    flickImg.contentX = preX
-                    flickImg.contentY = preY
 
                     //Get updated "zoom center point" values when the image is completely zoomed out
                     if(img.scale == 1){
@@ -200,8 +190,7 @@ Page{
 
                     }
 
-                    updateContentY();
-                    updateContentX();
+                    // updateContentX and updateContentY are called after the scale on the target item updates bindings
                 }
 
                 onPinchFinished: {
@@ -225,8 +214,13 @@ Page{
                     id: flickImg
 
                     anchors.fill:rect
-
                     transformOrigin: Item.TopLeft
+
+                    contentWidth: img.width * img.scale
+                    contentHeight: img.height * img.scale
+
+                    onContentWidthChanged: { pinchImg.updateContentX(); pinchImg.updateContentY(); }
+                    onContentHeightChanged: { pinchImg.updateContentX(); pinchImg.updateContentY(); }
 
                     Image{
                         id: img
