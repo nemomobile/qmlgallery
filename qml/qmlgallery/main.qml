@@ -49,17 +49,6 @@ PageStackWindow {
         theme.inverted = true
     }
 
-    /*ToolBarLayout {
-        id: commonTools
-        ToolIcon {
-            platformIconId: "toolbar-view-menu"
-            anchors.right: (parent === undefined) ? undefined : parent.right
-            onClicked: (myMenu.status == DialogStatus.Closed) ? myMenu.open() : myMenu.close()
-        }
-    }*/
-
-
-
     /*Menu {
         id: myMenu
         visualParent: pageStack

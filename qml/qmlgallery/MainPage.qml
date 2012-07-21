@@ -36,7 +36,7 @@ import QtMobility.gallery 1.1
 Page {
     anchors.fill: parent
 
-    //tools: commonTools
+    tools: mainTools
 
     // baseThumbnailSize is used to request images, and display size will be <=
     property int baseThumbnailSize: 160
@@ -70,6 +70,7 @@ Page {
         model: gallery
         cellHeight: thumbnailSize + padding
         cellWidth: thumbnailSize + padding
+        cacheBuffer: cellHeight * 3
 
         delegate:
             Image {
@@ -98,5 +99,33 @@ Page {
         }
     }
 
+    ToolBarLayout {
+        id: mainTools
+        ToolIcon {
+            platformIconId: "toolbar-view-menu"
+            anchors.right: (parent === undefined) ? undefined : parent.right
+            //onClicked: (myMenu.status == DialogStatus.Closed) ? myMenu.open() : myMenu.close()
+        }
+    }
 
+    states: State {
+        name: "active"
+        when: status == PageStatus.Active || status == PageStatus.Activating
+
+        PropertyChanges {
+            target: appWindow.pageStack.toolBar
+            opacity: 0.8
+        }
+    }
+
+    transitions: Transition {
+        from: "active"
+        reversible: true
+
+        NumberAnimation {
+            target: appWindow.pageStack.toolBar
+            property: "opacity"
+            duration: 250
+        }
+    }
 }
