@@ -67,8 +67,8 @@ Page{
                 id: pinchImg
                 anchors.fill :rect
 
-                //width: ((img.width * img.scale) > imgContainer.width) ? imgContainer.width : img.width*img.scale
-                //height:((img.height * img.scale) > imgContainer.height) ? imgContainer.height : img.height*img.scale
+                //width: Math.min(img.width * img.scale, imgContainer.width)
+                //height:Math.min(img.height * img.scale, imgContainer.height)
 
                 //Disable the pincharea if the listview is scrolling, to avoid problems
                 enabled: !imageview.moving
@@ -111,11 +111,9 @@ Page{
                                 lastContentX = flickImg.contentX
                                 deltaX = flickImg.contentX + parent.width
                                 lastScaleX = img.scale
-                                flickImg.contentX = (lastContentX + deltaX * ((img.scale / lastScaleX) - 1.0 ))
                             }
-                            else{
-                                flickImg.contentX = (lastContentX + deltaX * ((img.scale / lastScaleX) - 1.0 ))
-                            }
+
+                            flickImg.contentX = (lastContentX + deltaX * ((img.scale / lastScaleX) - 1.0 ))
                         }
                     }
                     else{
@@ -125,31 +123,28 @@ Page{
 
                 function updateContentY(){
 
-                    //Only calculate the correct ContentX if the image is wider than the screen, otherwise keep it centered (contentX = 0 in the else branch)
+                    //Only calculate the correct ContentY if the image is taller than the screen, otherwise keep it centered (contentY = 0 in the else branch)
                     if (height == imageview.height){
 
-                        //Anchors the image to the left when zooming out
+                        //Anchors the image to the top when zooming out
                         if (flickImg.contentY < 0){
                             deltaY = 0.0
                             lastContentY = 0.0
                             flickImg.contentY = 0.0
                         }
                         else {
-                            //if the right end of the image is inside the screen area, lock it to the right and zoom out using right edge as an anchor
+                            //if the bottom end of the image is inside the screen area, lock it to the bottom and zoom out using bottom edge as an anchor
                             if ((flickImg.contentHeight - flickImg.contentY < parent.height) && isZoomingOut){
 
-                                //align to the right
+                                //align to the bottom
                                 flickImg.contentY -= parent.height - (flickImg.contentHeight - flickImg.contentY)
 
-                                //Algo: set variable as if a new pinch starting from right edge were triggered
+                                //Algo: set variable as if a new pinch starting from bottom edge were triggered
                                 lastContentY = flickImg.contentY
                                 deltaY = flickImg.contentY + parent.height
                                 lastScaleY = img.scale
-                                flickImg.contentY = (lastContentY + deltaY * ((img.scale / lastScaleY) - 1.0 ))
                             }
-                            else{
-                                flickImg.contentY = (lastContentY + deltaY * ((img.scale / lastScaleY) - 1.0 ))
-                            }
+                            flickImg.contentY = (lastContentY + deltaY * ((img.scale / lastScaleY) - 1.0 ))
                         }
                     }
                     else{
@@ -226,8 +221,8 @@ Page{
                 id: rect
                 anchors.centerIn:parent
 
-                width: (parent.width > img.width*img.scale) ? img.width*img.scale : parent.width
-                height:(parent.height > img.height*img.scale) ? img.height*img.scale : parent.height
+                width:  Math.min(img.width*img.scale, parent.width)
+                height: Math.min(img.height*img.scale, parent.height)
 
                 Flickable{
                     id: flickImg
