@@ -45,6 +45,10 @@ PageStackWindow {
         id: imagepage
     }
 
+    Component.onCompleted: {
+        theme.inverted = true
+    }
+
     /*ToolBarLayout {
         id: commonTools
         ToolIcon {
