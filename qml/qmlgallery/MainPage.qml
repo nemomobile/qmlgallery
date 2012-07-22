@@ -35,7 +35,6 @@ import QtMobility.gallery 1.1
 
 Page {
     anchors.fill: parent
-
     tools: mainTools
 
     // baseThumbnailSize is used to request images, and display size will be <=
@@ -44,10 +43,9 @@ Page {
     property int padding: 2
 
     Component.onCompleted: updateThumbnailSize()
-    onWidthChanged: updateThumbnailSize()
     onPaddingChanged: updateThumbnailSize()
     onBaseThumbnailSizeChanged: updateThumbnailSize()
-    
+ 
     // Calculate the thumbnail size to fit items of approximately 160px
     // onto each row with a minimal amount of extra space. The goal is
     // to avoid having a large unused area on the right edge.
@@ -58,12 +56,14 @@ Page {
         thumbnailSize = Math.floor((width - padding * itemsPerRow) / itemsPerRow)
     }
 
+    Connections {
+        target: screen
+        onCurrentOrientationChanged: updateThumbnailSize()
+    }
+
     GridView {
         id: grid
-        anchors.centerIn: parent
-
-        width: parent.width
-        height: parent.height
+        anchors.fill: parent
 
         flow: GridView.LeftToRight
         maximumFlickVelocity: 3000
