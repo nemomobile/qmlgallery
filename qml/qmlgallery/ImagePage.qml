@@ -248,6 +248,24 @@ Page{
                             else if (scale == 1 && imageview.interactive == false) imageview.interactive = true
                         }
 
+                        MouseArea {
+                            anchors.fill: parent
+
+                            Timer {
+                                id: doubleClickTimer
+                                interval: 350
+                            }
+
+                            // onDoubleClicked seems broken on-device with all of the flickable/pincharea here
+                            onClicked: {
+                                if (doubleClickTimer.running) {
+                                    img.scale = 1
+                                    flickImg.contentX = flickImg.contentY = 0
+                                }
+                                else
+                                    doubleClickTimer.start()
+                            }
+                        }
                     }
 
                 }
