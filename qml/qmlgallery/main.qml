@@ -41,10 +41,6 @@ PageStackWindow {
         id: mainPage
     }
 
-    ImagePage{
-        id: imagepage
-    }
-
     Component.onCompleted: {
         theme.inverted = true
     }
