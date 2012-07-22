@@ -285,5 +285,4 @@ Page{
                 onClicked: appWindow.pageStack.pop()
             }
     }
-
 }

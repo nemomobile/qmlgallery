@@ -82,7 +82,7 @@ Page {
 
                 MouseArea {
                     anchors.fill: parent
-                    onClicked: appWindow.pageStack.push(imagepage, {imageId: index, galleryModel: gallery } )
+                    onClicked: appWindow.pageStack.push(Qt.resolvedUrl("ImagePage.qml"), {imageId: index, galleryModel: gallery } )
                 }
             }
 
