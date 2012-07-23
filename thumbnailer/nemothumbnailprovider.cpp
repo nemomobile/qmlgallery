@@ -37,6 +37,14 @@
 #include <QImageReader>
 #include <QDateTime>
 
+#undef THUMBNAILER_DEBUG
+
+#ifdef THUMBNAILER_DEBUG
+#define TDEBUG qDebug
+#else
+#define TDEBUG if(false)qDebug
+#endif
+
 #include "nemothumbnailprovider.h"
 
 static inline QString cachePath()
@@ -109,7 +117,7 @@ QImage NemoThumbnailProvider::requestImage(const QString &id, QSize *size, const
         nid = nid.remove(0, 7);
     }
 
-    qDebug() << Q_FUNC_INFO << "Requested image: " << id << " with size " << requestedSize;
+    TDEBUG() << Q_FUNC_INFO << "Requested image: " << id << " with size " << requestedSize;
 
     // sourceSize should indicate what size thumbnail you want. i.e. if you want a 120x120px thumbnail,
     // set sourceSize: Qt.size(120, 120).
@@ -122,7 +130,7 @@ QImage NemoThumbnailProvider::requestImage(const QString &id, QSize *size, const
     QByteArray hashData = cacheKey(id, requestedSize);
     QImage img = attemptCachedServe(id, hashData);
     if (!img.isNull()) {
-        qDebug() << Q_FUNC_INFO << "Read " << id << " from cache";
+        TDEBUG() << Q_FUNC_INFO << "Read " << id << " from cache";
         return img;
     }
 
@@ -183,6 +191,6 @@ QImage NemoThumbnailProvider::requestImage(const QString &id, QSize *size, const
 
     // step 3: write to cache for next time
     writeCacheFile(hashData, img);
-    qDebug() << Q_FUNC_INFO << "Wrote " << id << " to cache";
+    TDEBUG() << Q_FUNC_INFO << "Wrote " << id << " to cache";
     return img;
 }
