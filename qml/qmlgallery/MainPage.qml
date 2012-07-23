@@ -32,6 +32,7 @@
 import QtQuick 1.1
 import com.nokia.meego 1.0
 import QtMobility.gallery 1.1
+import org.nemomobile.thumbnailer 1.0
 
 Page {
     anchors.fill: parent

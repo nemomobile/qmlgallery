@@ -34,7 +34,6 @@
 #include <QtDeclarative/QDeclarativeEngine>
 
 #include "qmlapplicationviewer.h"
-#include "filethumbnailprovider.h"
 
 Q_DECL_EXPORT int main(int argc, char *argv[])
 {
@@ -49,9 +48,6 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
     viewer.setMainQmlFile(QLatin1String("qml/qmlgallery/main.qml"));
     viewer.showExpanded();
     viewer.setWindowTitle("Gallery");
-
-    QDeclarativeEngine *e = viewer.engine();
-    e->addImageProvider(QLatin1String("nemoThumbnail"), new FileThumbnailImageProvider);
 
     return app->exec();
 }
