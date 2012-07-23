@@ -7,7 +7,7 @@ HEADERS += nemothumbnailprovider.h
 
 # do not edit below here, move this to a shared .pri?
 TEMPLATE = lib
-CONFIG += qt plugin # hide_symbols
+CONFIG += qt plugin hide_symbols
 QT += declarative
 
 target.path = $$[QT_INSTALL_IMPORTS]/$$PLUGIN_IMPORT_PATH
