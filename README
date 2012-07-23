@@ -1,0 +1,13 @@
+this is a repository for shared C++-only QML plugins, offering access to
+subsystems inside the platform like image thumbnailing.
+
+if you want to add something, please ask the maintainer of this library first to
+make sure it's a good fit
+
+the current maintainer is: Robin Burchell (robin+mer@viroteck.net)
+
+current plugins:
+ - thumbnailer: offers an image provider for fast thumbnailing/sharing of
+   thumbnail cache between multiple applications
+
+   to use, access image://nemoThumbnail/path/to/file.jpg in an Image element.
