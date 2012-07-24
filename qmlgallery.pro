@@ -1,47 +1,28 @@
-# Add more folders to ship with the application, here
-folder_01.source = qml/qmlgallery
-folder_01.target = qml
-DEPLOYMENTFOLDERS = folder_01
+PROJECT_NAME = qmlgallery
+QT += declarative
 
-# Additional import path used to resolve QML modules in Creator's code model
-QML_IMPORT_PATH =
+# qml API we provide
+qml_api.files = qml/api/*
+qml_api.path = $$[QT_INSTALL_IMPORTS]/org/nemomobile/$$PROJECT_NAME
+INSTALLS += qml_api
 
-symbian:TARGET.UID3 = 0xE6F06568
+target.path = $$INSTALL_ROOT/usr/bin
+INSTALLS += target
 
-# Smart Installer package's UID
-# This UID is from the protected range and therefore the package will
-# fail to install if self-signed. By default qmake uses the unprotected
-# range value if unprotected UID is defined for the application and
-# 0x2002CCCF value if protected UID is given to the application
-#symbian:DEPLOYMENT.installer_header = 0x2002CCCF
-
-# Allow network access on Symbian
-symbian:TARGET.CAPABILITY += NetworkServices
-
-# If your application uses the Qt Mobility libraries, uncomment the following
-# lines and add the respective components to the MOBILITY variable.
-# CONFIG += mobility
-# MOBILITY +=
-
-# Speed up launching on MeeGo/Harmattan when using applauncherd daemon
-CONFIG += qdeclarative-boostable
-
-# Add dependency to Symbian components
-# CONFIG += qt-components
-
-# The .cpp file which was generated for your project. Feel free to hack it.
+RESOURCES += res.qrc
 SOURCES += main.cpp
 
-# Please do not modify the following two lines. Required for deployment.
-include(qmlapplicationviewer/qmlapplicationviewer.pri)
-qtcAddDeployment()
+# do not edit below here
+TEMPLATE = app
+CONFIG -= app_bundle
+TARGET = $$PROJECT_NAME
 
-OTHER_FILES += \
-    qtc_packaging/debian_harmattan/rules \
-    qtc_packaging/debian_harmattan/README \
-    qtc_packaging/debian_harmattan/manifest.aegis \
-    qtc_packaging/debian_harmattan/copyright \
-    qtc_packaging/debian_harmattan/control \
-    qtc_packaging/debian_harmattan/compat \
-    qtc_packaging/debian_harmattan/changelog \
-    qtc_packaging/debian_harmattan/TODO.txt
+CONFIG += link_pkgconfig
+
+packagesExist(qdeclarative-boostable) {
+    message("Building with qdeclarative-boostable support")
+    DEFINES += HAS_BOOSTER
+    PKGCONFIG += qdeclarative-boostable
+} else {
+    warning("qdeclarative-boostable not available; startup times will be slow er")                                                                         
+}

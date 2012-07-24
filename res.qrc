@@ -1,0 +1,7 @@
+<RCC>
+    <qresource>
+        <file>qml/ImagePage.qml</file>
+        <file>qml/MainPage.qml</file>
+        <file>qml/main.qml</file>
+    </qresource>
+</RCC>

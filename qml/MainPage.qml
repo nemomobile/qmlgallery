@@ -31,72 +31,22 @@
 
 import QtQuick 1.1
 import com.nokia.meego 1.0
-import QtMobility.gallery 1.1
-import org.nemomobile.thumbnailer 1.0
+import org.nemomobile.qmlgallery 1.0
 
 Page {
     anchors.fill: parent
     tools: mainTools
 
-    // baseThumbnailSize is used to request images, and display size will be <=
-    property int baseThumbnailSize: 160
-    property int thumbnailSize: 0
-    property int padding: 2
+    GalleryView {
+        model: GalleryModel {
+            id: gallery
+        }
 
-    Component.onCompleted: updateThumbnailSize()
-    onPaddingChanged: updateThumbnailSize()
-    onBaseThumbnailSizeChanged: updateThumbnailSize()
- 
-    // Calculate the thumbnail size to fit items of approximately 160px
-    // onto each row with a minimal amount of extra space. The goal is
-    // to avoid having a large unused area on the right edge.
-    function updateThumbnailSize() {
-        var itemsPerRow = Math.floor(width / baseThumbnailSize)
-        // Ideally, this would use (padding*(itemsPerRow-1)), but GridView's
-        // behavior on cellWidth requires the rightmost item to have padding.
-        thumbnailSize = Math.floor((width - padding * itemsPerRow) / itemsPerRow)
-    }
-
-    Connections {
-        target: screen
-        onCurrentOrientationChanged: updateThumbnailSize()
-    }
-
-    GridView {
-        id: grid
-        anchors.fill: parent
-
-        flow: GridView.LeftToRight
-        maximumFlickVelocity: 3000
-        model: gallery
-        cellHeight: thumbnailSize + padding
-        cellWidth: thumbnailSize + padding
-        cacheBuffer: cellHeight * 3
-
-        delegate:
-            Image {
-                width: thumbnailSize
-                height: thumbnailSize
-                sourceSize: Qt.size(baseThumbnailSize, baseThumbnailSize)
-                asynchronous: true
-                source: "image://nemoThumbnail/" + url
-
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: appWindow.pageStack.push(Qt.resolvedUrl("ImagePage.qml"), {imageId: index, galleryModel: gallery } )
-                }
+        delegate: GalleryDelegate {
+            MouseArea {
+                anchors.fill: parent
+                onClicked: appWindow.pageStack.push(Qt.resolvedUrl("ImagePage.qml"), {imageId: index, galleryModel: gallery } )
             }
-
-    }
-
-    DocumentGalleryModel {
-        id: gallery
-
-        rootType : DocumentGallery.Image
-        properties : [ "url", "width", "height" ]
-        filter : GalleryWildcardFilter {
-            property : "fileName";
-            value : "*.jpg";
         }
     }
 

@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2012 Andrea Bernabei <and.bernabei@gmail.com>
- * Copyright (C) 2012 Robin Burchell <robin+mer@viroteck.net>
+ * Copyright (C) 2011 Robin Burchell <robin+mer@viroteck.net>
  *
  * You may use this file under the terms of the BSD license as follows:
  *
@@ -30,24 +29,65 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
  */
 
-#include <QtGui/QApplication>
-#include <QtDeclarative/QDeclarativeEngine>
+#include <QDesktopServices>
+#include <QApplication>
+#include <QDeclarativeView>
+#include <QDeclarativeEngine>
+#include <QDeclarativeContext>
+#include <QDebug>
+#include <QDir>
+#ifdef HAS_BOOSTER
+#include <applauncherd/MDeclarativeCache>
+#endif
 
-#include "qmlapplicationviewer.h"
-
-Q_DECL_EXPORT int main(int argc, char *argv[])
+#ifdef HAS_BOOSTER
+Q_DECL_EXPORT
+#endif
+int main(int argc, char **argv)
 {
-    QScopedPointer<QApplication> app(createApplication(argc, argv));
+    QApplication *application;
+    QDeclarativeView *view;
+#ifdef HAS_BOOSTER
+    application = MDeclarativeCache::qApplication(argc, argv);
+    view = MDeclarativeCache::qDeclarativeView();
+#else
+    qWarning() << Q_FUNC_INFO << "Warning! Running without booster. This may be a bit slower.";
+    QApplication stackApp(argc, argv);
+    QDeclarativeView stackView;
+    application = &stackApp;
+    view = &stackView;
+#endif
 
-    QmlApplicationViewer viewer;
-    viewer.setAttribute(Qt::WA_OpaquePaintEvent);
-    viewer.setAttribute(Qt::WA_NoSystemBackground);
-    viewer.viewport()->setAttribute(Qt::WA_OpaquePaintEvent);
-    viewer.viewport()->setAttribute(Qt::WA_NoSystemBackground);
-    viewer.setOrientation(QmlApplicationViewer::ScreenOrientationLockPortrait);
-    viewer.setMainQmlFile(QLatin1String("qml/qmlgallery/main.qml"));
-    viewer.showExpanded();
-    viewer.setWindowTitle("Gallery");
+    bool isFullscreen = false;
+    QStringList arguments = application->arguments();
+    for (int i = 0; i < arguments.count(); ++i) {
+        QString parameter = arguments.at(i);
+        if (parameter == "-fullscreen") {
+            isFullscreen = true;
+        } else if (parameter == "-help") {
+            qDebug() << "Gallery application";
+            qDebug() << "-fullscreen   - show QML fullscreen";
+            exit(0);
+        }
+    }
 
-    return app->exec();
+    QObject::connect(view->engine(), SIGNAL(quit()), application, SLOT(quit()));
+
+    if (QFile::exists("main.qml"))
+        view->setSource(QUrl::fromLocalFile("main.qml"));
+    else
+        view->setSource(QUrl("qrc:/qml/main.qml"));
+
+    view->setAttribute(Qt::WA_OpaquePaintEvent);
+    view->setAttribute(Qt::WA_NoSystemBackground);
+    view->viewport()->setAttribute(Qt::WA_OpaquePaintEvent);
+    view->viewport()->setAttribute(Qt::WA_NoSystemBackground);
+
+    if (isFullscreen)
+        view->showFullScreen();
+    else
+        view->show();
+
+    return application->exec();
 }
+
