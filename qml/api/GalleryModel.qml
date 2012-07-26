@@ -34,6 +34,7 @@ import QtMobility.gallery 1.1
 DocumentGalleryModel {
     id: gallery
 
+	autoUpdate: true
     rootType : DocumentGallery.Image
     properties : [ "url", "width", "height" ]
     filter : GalleryWildcardFilter {
