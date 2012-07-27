@@ -37,8 +37,4 @@ DocumentGalleryModel {
 	autoUpdate: true
     rootType : DocumentGallery.Image
     properties : [ "url", "width", "height" ]
-    filter : GalleryWildcardFilter {
-        property : "fileName";
-        value : "*.jpg";
-    }
 }
