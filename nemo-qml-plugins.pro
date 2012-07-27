@@ -1,2 +1,2 @@
 TEMPLATE = subdirs
-SUBDIRS += thumbnailer
+SUBDIRS += thumbnailer contacts

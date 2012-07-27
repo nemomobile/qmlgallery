@@ -11,3 +11,7 @@ current plugins:
    thumbnail cache between multiple applications
 
    to use, access image://nemoThumbnail/path/to/file.jpg in an Image element.
+
+- contacts: offers an API similar to QtMobility.contacts, except without the
+  fail
+
