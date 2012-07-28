@@ -76,9 +76,6 @@ protected:
     virtual bool filterAcceptsRow(int source_row, const QModelIndex& source_parent) const;
     virtual bool lessThan(const QModelIndex& left, const QModelIndex& right) const;
 
-private slots:
-    void readSettings();
-
 private:
     SeasideProxyModelPriv *priv;
     Q_DISABLE_COPY(SeasideProxyModel);

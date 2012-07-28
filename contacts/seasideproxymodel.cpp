@@ -31,8 +31,6 @@ SeasideProxyModel::SeasideProxyModel(QObject *parent)
     setDynamicSortFilter(true);
     setFilterKeyColumn(-1);
 
-    readSettings();
-
     setSourceModel(SeasidePeopleModel::instance());
     sort(0, Qt::AscendingOrder);
 }
@@ -40,10 +38,6 @@ SeasideProxyModel::SeasideProxyModel(QObject *parent)
 SeasideProxyModel::~SeasideProxyModel()
 {
     delete priv;
-}
-
-void SeasideProxyModel::readSettings() 
-{
 }
 
 void SeasideProxyModel::setFilter(FilterType filter)
