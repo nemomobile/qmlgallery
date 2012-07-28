@@ -30,8 +30,9 @@
  */
 
 #include <QDebug>
-
+#include <QFile>
 #include <QVector>
+
 #include <QContactAddress>
 #include <QContactAvatar>
 #include <QContactThumbnail>
@@ -49,11 +50,12 @@
 #include <QContactUrl>
 #include <QContactNote>
 #include <QContactPresence>
-#include <QSettings>
 #include <QContactDetailFilter>
 #include <QContactLocalIdFilter>
 #include <QContactManagerEngine>
-#include <QFile>
+
+#include <QVersitReader>
+#include <QVersitContactImporter>
 
 #include "seasideperson.h"
 #include "seasidepeoplemodel.h"
@@ -176,11 +178,17 @@ QVariant SeasidePeopleModel::data(const QModelIndex& index, int role) const
     }
 }
 
+#include <QDir>
+
 void SeasidePeopleModel::importContacts(const QString &path)
 {
-    qWarning() << Q_FUNC_INFO << "Unimplemented";
-#if 0
-    QFle vcf(path);
+    qDebug() << QDir::currentPath();
+    QFile vcf(path);
+    if (!vcf.open(QIODevice::ReadOnly)) {
+        qWarning() << Q_FUNC_INFO << "Cannot open " << path;
+        return;
+    }
+
     QVersitReader reader(&vcf);
     reader.startReading();
     reader.waitForFinished();
@@ -188,12 +196,12 @@ void SeasidePeopleModel::importContacts(const QString &path)
     QVersitContactImporter importer;
     importer.importDocuments(reader.results());
 
-    importer.contacts();
-    //if (newContacts.size()) {
-    //    q->beginInsertRows(QModelIndex(), size, size + newContacts.size() - 1);
-    //    addContacts(newContacts, size);
-    //    q->endInsertRows();
-    //}
-#endif
+    QList<QContact> newContacts = importer.contacts();
+
+    foreach (const QContact &contact, newContacts)
+        priv->contactsPendingSave.append(contact);
+
+    priv->savePendingContacts();
+    qDebug() << Q_FUNC_INFO << "Imported " << newContacts.size() << " contacts " << " from " << path;
 }
 
