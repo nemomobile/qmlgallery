@@ -67,12 +67,27 @@ SeasidePeopleModel::SeasidePeopleModel(QObject *parent)
     roles.insert(Qt::DisplayRole, "display");
     roles.insert(FirstNameRole, "firstName");
     roles.insert(LastNameRole, "lastName");
+    roles.insert(SectionBucketRole, "sectionBucket");
     roles.insert(PersonRole, "person");
     setRoleNames(roles);
 }
 
 SeasidePeopleModel::~SeasidePeopleModel()
 {
+}
+
+SeasidePeopleModel *SeasidePeopleModel::instance()
+{
+    static SeasidePeopleModel *spm = 0;
+
+    if (spm)
+        return spm;
+
+    // TODO: refcount spm instance, destroy it X time after the last refcount
+    // drops. this is because we're expensive to instantiate, but we should not
+    // instantly destroy, for the same reason.
+    spm = new SeasidePeopleModel;
+    return spm;
 }
 
 int SeasidePeopleModel::rowCount(const QModelIndex& parent) const
@@ -152,6 +167,8 @@ QVariant SeasidePeopleModel::data(const QModelIndex& index, int role) const
             return aperson->firstName();
         case LastNameRole:
             return aperson->lastName();
+        case SectionBucketRole:
+            return aperson->sectionBucket();
         case PersonRole:
             return QVariant::fromValue<SeasidePerson *>(aperson);
         default:
@@ -162,5 +179,21 @@ QVariant SeasidePeopleModel::data(const QModelIndex& index, int role) const
 void SeasidePeopleModel::importContacts(const QString &path)
 {
     qWarning() << Q_FUNC_INFO << "Unimplemented";
+#if 0
+    QFle vcf(path);
+    QVersitReader reader(&vcf);
+    reader.startReading();
+    reader.waitForFinished();
+
+    QVersitContactImporter importer;
+    importer.importDocuments(reader.results());
+
+    importer.contacts();
+    //if (newContacts.size()) {
+    //    q->beginInsertRows(QModelIndex(), size, size + newContacts.size() - 1);
+    //    addContacts(newContacts, size);
+    //    q->endInsertRows();
+    //}
+#endif
 }
 

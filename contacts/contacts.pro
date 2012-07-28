@@ -12,12 +12,14 @@ SOURCES += plugin.cpp \
            localeutils.cpp \
            seasidepeoplemodel.cpp \
            seasidepeoplemodel_p.cpp \
-           seasideperson.cpp
+           seasideperson.cpp \
+           seasideproxymodel.cpp
 
 HEADERS += localeutils_p.h \
            seasidepeoplemodel.h \
            seasidepeoplemodel_p.h \
-           seasideperson.h
+           seasideperson.h \
+           seasideproxymodel.h
 
 
 

@@ -59,6 +59,8 @@ public:
     QString lastName() const;
     void setLastName(const QString &name);
 
+    Q_PROPERTY(QString sectionBucket READ sectionBucket NOTIFY displayLabelChanged)
+    QString sectionBucket() const;
     Q_PROPERTY(QString displayLabel READ displayLabel NOTIFY displayLabelChanged)
     QString displayLabel() const;
 

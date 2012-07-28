@@ -421,6 +421,18 @@ QString SeasidePerson::displayLabel() const
     return mDisplayLabel;
 }
 
+QString SeasidePerson::sectionBucket() const
+{
+//    return priv->localeHelper->getBinForString(data(row,
+//                DisplayLabelRole).toString());
+    // TODO: won't be at all correct for localisation
+    // for some locales (asian in particular), we may need multiple bytes - not
+    // just the first - also, we should use QLocale (or ICU) to uppercase, not
+    // QString, as QString uses C locale.
+    return displayLabel().at(0).toUpper();
+
+}
+
 QString SeasidePerson::companyName() const
 {
     qDebug() << Q_FUNC_INFO << "STUB";

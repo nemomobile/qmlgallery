@@ -51,9 +51,12 @@ public:
     SeasidePeopleModel(QObject *parent = 0);
     virtual ~SeasidePeopleModel();
 
+    static SeasidePeopleModel *instance();
+
     enum PeopleRoles {
         FirstNameRole = Qt::UserRole,
         LastNameRole,
+        SectionBucketRole,
         PersonRole
     };
 
@@ -67,13 +70,6 @@ public:
     Q_INVOKABLE SeasidePerson *personById(int id) const;
     Q_INVOKABLE void removePerson(SeasidePerson *person);
     Q_INVOKABLE void importContacts(const QString &path);
-
-    Q_PROPERTY(int count READ count NOTIFY countChanged)
-    Q_PROPERTY(int length READ count NOTIFY countChanged)
-    int count() const { return rowCount(QModelIndex()); }
-
-signals:
-    void countChanged();
 
 private:
     SeasidePeopleModelPriv *priv;

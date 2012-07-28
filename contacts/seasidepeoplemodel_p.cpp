@@ -80,8 +80,6 @@ void SeasidePeopleModelPriv::addContacts(const QList<QContact> contactsList, int
         }
         idToContact.insert(id, new SeasidePerson(contact));
     }
-
-    emit q->countChanged();
 }
 
 void SeasidePeopleModelPriv::fixIndexMap()
@@ -182,7 +180,6 @@ void SeasidePeopleModelPriv::onRemoveStateChanged(QContactAbstractRequest::State
     qDebug() << Q_FUNC_INFO << "Removed" << removeRequest->contactIds();
     // TODO: where is our actual removal?
 
-    emit q->countChanged();
     removeRequest->deleteLater();
 }
 

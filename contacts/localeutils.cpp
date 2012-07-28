@@ -166,7 +166,9 @@ bool LocaleUtils::isLessThan(QString lStr, QString rStr)
     if (rStr == "#")
         return true;
 
-    return lStr < rStr;
+    // TODO: QString::toUpper() ignores locale!
+    // TODO: string copies here are not a nice thing
+    return lStr.toUpper() < rStr.toUpper();
 #if 0
     if (usePhoneBookCol())
         return locale->lessThanPhoneBook(lStr, rStr);
