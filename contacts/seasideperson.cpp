@@ -461,11 +461,6 @@ void SeasidePerson::setFavorite(bool favorite)
 QUrl SeasidePerson::avatarPath() const
 {
     QContactAvatar avatarDetail = mContact.detail<QContactAvatar>();
-
-    // TODO: a possible improvement would be a cache of thumbnails provided by
-    // libseaside based on the avatar path, i.e. a thumbnailPath(int width, int
-    // height) kind of getter. but that's for the future.
-
     QUrl avatarUrl = avatarDetail.imageUrl();
     if (avatarUrl.isEmpty())
         return QUrl("image://theme/icon-m-telephony-contact-avatar");
