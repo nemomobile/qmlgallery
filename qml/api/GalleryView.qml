@@ -66,4 +66,21 @@ GridView {
     cellHeight: thumbnailSize + padding
     cellWidth: thumbnailSize + padding
     cacheBuffer: cellHeight * 3
+
+    Text{
+        id: noElementsFoundText
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.leftMargin: 20
+        anchors.rightMargin: 20
+
+        visible: parent.model.count == 0 && parent.model.progress == 1.0
+
+        text : parent.model.filter == null ?  "No images yet..." : "No matching images found..."
+        color: "lightgrey"
+        font.pointSize: 26
+        horizontalAlignment: Text.AlignHCenter
+        wrapMode: Text.WordWrap
+    }
 }
