@@ -84,6 +84,10 @@ public:
     QStringList phoneNumbers() const;
     void setPhoneNumbers(const QStringList &phoneNumbers);
 
+    Q_PROPERTY(QStringList emailAddresses READ emailAddresses WRITE setEmailAddresses NOTIFY emailAddressesChanged)
+    QStringList emailAddresses() const;
+    void setEmailAddresses(const QStringList &emailAddresses);
+
     QContact contact() const;
     void setContact(const QContact &contact);
 
@@ -99,6 +103,7 @@ signals:
     void avatarPathChanged();
     void birthdayChanged();
     void phoneNumbersChanged();
+    void emailAddressesChanged();
 
 private:
     // TODO: private class

@@ -491,44 +491,60 @@ void SeasidePerson::setBirthday(const QString &birthday)
     emit birthdayChanged();
 }
 
+#define LIST_PROPERTY_FROM_DETAIL_FIELD(detailType, fieldName) \
+    QStringList list; \
+    \
+    foreach (const detailType &detail, mContact.details<detailType>()) { \
+        if (!detail.fieldName().isEmpty()) \
+            list << detail.fieldName(); \
+    } \
+    return list;
+
 QStringList SeasidePerson::phoneNumbers() const
 {
-    QStringList list;
-
-    foreach (const QContactPhoneNumber& phone, mContact.details<QContactPhoneNumber>()) {
-        if (!phone.number().isEmpty())
-            list << phone.number();
-    }
-
-    return list;
+    LIST_PROPERTY_FROM_DETAIL_FIELD(QContactPhoneNumber, number);
 }
+
+// this could probably be optimised, but it's easiest: we just remove
+// all the old phone number details, and add new ones
+#define SET_PROPERTY_FIELD_FROM_LIST(detailType, fieldNameGet, fieldNameSet, newValueList) \
+    const QList<detailType> &oldDetailList = mContact.details<detailType>(); \
+    \
+    if (oldDetailList.count() != newValueList.count()) { \
+        foreach (detailType detail, oldDetailList) \
+            mContact.removeDetail(&detail); \
+    \
+        foreach (const QString &value, newValueList) { \
+            detailType detail; \
+            detail.fieldNameSet(value); \
+            mContact.saveDetail(&detail); \
+        } \
+    } else { \
+        /* assign new numbers to the existing details. */ \
+        for (int i = 0; i != newValueList.count(); ++i) { \
+            detailType detail = oldDetailList.at(i); \
+            detail.fieldNameSet(newValueList.at(i)); \
+            mContact.saveDetail(&detail); \
+        } \
+    }
 
 void SeasidePerson::setPhoneNumbers(const QStringList &phoneNumbers)
 {
-    const QList<QContactPhoneNumber> &oldNumbers = mContact.details<QContactPhoneNumber>();
-
-    if (oldNumbers.count() != phoneNumbers.count()) {
-        // this could probably be optimised, but it's easiest: we just remove
-        // all the old phone number details, and add new ones
-        foreach (QContactPhoneNumber phone, oldNumbers)
-            mContact.removeDetail(&phone);
-
-        foreach (const QString &number, phoneNumbers) {
-            QContactPhoneNumber phone;
-            phone.setNumber(number);
-            mContact.saveDetail(&phone);
-        }
-    } else {
-        // assign new numbers to the existing details.
-        for (int i = 0; i != phoneNumbers.count(); ++i) {
-            QContactPhoneNumber phone = oldNumbers.at(i);
-            phone.setNumber(phoneNumbers.at(i));
-            mContact.saveDetail(&phone);
-        }
-    }
-
+    SET_PROPERTY_FIELD_FROM_LIST(QContactPhoneNumber, number, setNumber, phoneNumbers)
     emit phoneNumbersChanged();
 }
+
+QStringList SeasidePerson::emailAddresses() const
+{
+    LIST_PROPERTY_FROM_DETAIL_FIELD(QContactEmailAddress, emailAddress);
+}
+
+void SeasidePerson::setEmailAddresses(const QStringList &emailAddresses)
+{
+    SET_PROPERTY_FIELD_FROM_LIST(QContactEmailAddress, emailAddress, setEmailAddress, emailAddresses)
+    emit emailAddressesChanged();
+}
+
 
 QContact SeasidePerson::contact() const
 {
