@@ -32,7 +32,7 @@
 import QtQuick 1.1
 import com.nokia.meego 1.0
 
-Item{
+Item {
     id: imgContainer
 
     property int index: -1
@@ -42,7 +42,7 @@ Item{
     //This item has to be child of the controller
     property variant imgController: parent
 
-    function resetZoom(){
+    function resetZoom() {
         //resetting all variables related to pinch-to-zoom
         img.scale = 1
         flickImg.contentX = flickImg.contentY = 0
@@ -51,7 +51,7 @@ Item{
         pinchImg.isZoomingOut = false
     }
 
-    PinchArea{
+    PinchArea {
         id: pinchImg
         anchors.fill: imgContainer
 
@@ -72,10 +72,10 @@ Item{
         property bool isZoomingOut: false
 
 
-        function updateContentX(){
+        function updateContentX() {
 
             //Only calculate the correct ContentX if the image is wider than the screen, otherwise keep it centered (contentX = 0 in the else branch)
-            if (rect.width == imgController.width){
+            if (rect.width == imgController.width) {
 
                 //Anchors the image to the left
                 if (flickImg.contentX < 0){
@@ -85,7 +85,7 @@ Item{
                 }
                 else {
                     //if the right end of the image is inside the screen area, lock it to the right and zoom out using right edge as an anchor
-                    if ((flickImg.contentWidth - flickImg.contentX < parent.width) && isZoomingOut){
+                    if ((flickImg.contentWidth - flickImg.contentX < parent.width) && isZoomingOut) {
 
                         //align to the right
                         flickImg.contentX -= parent.width - (flickImg.contentWidth - flickImg.contentX)
@@ -99,25 +99,25 @@ Item{
                     flickImg.contentX = (lastContentX + deltaX * ((img.scale / lastScaleX) - 1.0 ))
                 }
             }
-            else{
+            else {
                 flickImg.contentX = 0
             }
         }
 
-        function updateContentY(){
+        function updateContentY() {
 
             //Only calculate the correct ContentY if the image is taller than the screen, otherwise keep it centered (contentY = 0 in the else branch)
-            if (rect.height == imgController.height){
+            if (rect.height == imgController.height) {
 
                 //Anchors the image to the top when zooming out
-                if (flickImg.contentY < 0){
+                if (flickImg.contentY < 0) {
                     deltaY = 0.0
                     lastContentY = 0.0
                     flickImg.contentY = 0.0
                 }
                 else {
                     //if the bottom end of the image is inside the screen area, lock it to the bottom and zoom out using bottom edge as an anchor
-                    if ((flickImg.contentHeight - flickImg.contentY < parent.height) && isZoomingOut){
+                    if ((flickImg.contentHeight - flickImg.contentY < parent.height) && isZoomingOut) {
                         //align to the bottom
                         flickImg.contentY -= parent.height - (flickImg.contentHeight - flickImg.contentY)
 
@@ -129,29 +129,28 @@ Item{
                     flickImg.contentY = (lastContentY + deltaY * ((img.scale / lastScaleY) - 1.0 ))
                 }
             }
-            else{
+            else {
                 flickImg.contentY = 0
             }
         }
 
 
-        onPinchUpdated:{
+        onPinchUpdated: {
             //Am I zooming in or out?
             if (pinch.scale > pinch.previousScale) isZoomingOut = false
             else isZoomingOut = true
 
             //Get updated "zoom center point" values when the image is completely zoomed out
-            if(img.scale == 1){
+            if(img.scale == 1) {
                 //This is so that everytime you zoom out, the new zoom is started with updated values
                 initializedX = false
                 initializedY = false
             }
+
             //i.e. everytime the image is wider than the screen, it should actually be
             // img.width == imgController.width, but this condition is rarely met because of numeric error
-            if (rect.width == imgController.width)
-            {
-                if (!initializedX )
-                {
+            if (rect.width == imgController.width) {
+                if (!initializedX ) {
                     //If it has not already been set by the "if (height == parent.imgController.height)" branch, set the scale here
                     lastScaleX = img.scale
 
@@ -162,10 +161,8 @@ Item{
 
             }
 
-            if (rect.height == imgController.height)
-            {
-                if (!initializedY)
-                {
+            if (rect.height == imgController.height) {
+                if (!initializedY) {
                     //If it has not already been set by the "if (width == imgController.width)", set the scale here
                     lastScaleY = img.scale
 
@@ -187,26 +184,32 @@ Item{
 
     }
 
-    Item{
+    Item {
         id: rect
-        anchors.centerIn:parent
+        anchors.centerIn: parent
 
-        width:  Math.min(img.width*img.scale, parent.width)
+        width: Math.min(img.width*img.scale, parent.width)
         height: Math.min(img.height*img.scale, parent.height)
 
-        Flickable{
+        Flickable {
             id: flickImg
 
-            anchors.fill:rect
+            anchors.fill: rect
             transformOrigin: Item.TopLeft
 
             contentWidth: img.width * img.scale
             contentHeight: img.height * img.scale
 
-            onContentWidthChanged: { pinchImg.updateContentX(); pinchImg.updateContentY(); }
-            onContentHeightChanged: { pinchImg.updateContentX(); pinchImg.updateContentY(); }
+            onContentWidthChanged: {
+                pinchImg.updateContentX()
+                pinchImg.updateContentY()
+            }
+            onContentHeightChanged: {
+                pinchImg.updateContentX()
+                pinchImg.updateContentY()
+            }
 
-            Image{
+            Image {
                 id: img
 
                 //For Harmattan/Nemo ( THIS PART HAS TO BE FIXED , THE IMAGE IS NOT SCALED TO FILL THE SCREEN ATM)
@@ -241,11 +244,8 @@ Item{
 
                     // onDoubleClicked seems broken on-device with all of the flickable/pincharea here
                     onClicked: {
-                        if (doubleClickTimer.running) {
-                            resetZoom()
-                        }
-                        else
-                            doubleClickTimer.start()
+                        if (doubleClickTimer.running) resetZoom()
+                        else doubleClickTimer.start()
                     }
                 }
             }

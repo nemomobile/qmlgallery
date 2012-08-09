@@ -33,11 +33,11 @@ import QtQuick 1.1
 import com.nokia.meego 1.0
 import QtMobility.gallery 1.1
 
-Page{
+Page {
     id: imageController
-    anchors.fill:parent
+    anchors.fill: parent
 
-    clip:true
+    clip: true
     tools: imgTools
 
     property int imgContainerWidth: width
@@ -49,9 +49,9 @@ Page{
     property int flickToX: 0
     property int flickFromX: 0
     property bool moving: false
-    property variant leftMost : one
-    property variant leftMiddle : two
-    property variant middle : three
+    property variant leftMost: one
+    property variant leftMiddle: two
+    property variant middle: three
     property variant rightMiddle: four
     property variant rightMost: five
     property real swipeThreshold: 40
@@ -60,38 +60,25 @@ Page{
     property real pinchThreshold: 3
     property alias flickAreaEnabled: imgFlickable.enabled
 
-    onWidthChanged: {middle.resetZoom();alignToCenter()}
-
-    function modulus(a, b){
-        if (a < 0) return (a+b)%b
-        else return a%b
+    onWidthChanged: {
+        middle.resetZoom()
+        alignToCenter()
     }
 
-    //we could use this function instead of fixed assignments when we shift elements' positions
-    //NOTE: it's not tested yet
-    /*function findRemainingLeftMost(arr) {
-        if (arr.length != 0){
-            var leftmost = arr[0];
-            var idx = 0
-            for (var i = 0; i < arr.length; i++) {
-                if (arr[i].x < leftmost.x) {
-                    leftmost = arr[i]
-                    idx = i
-                }
-            }
-            arr.splice(idx, 1)
-            return leftmost
-        }
-    }*/
+    function modulus(a, b) {
+        if (a < 0) return (a+b) % b
+        else return a % b
+    }
 
-    function alignToCenter(){
+    function alignToCenter() {
         leftMost.x = leftMostOptimalX
     }
 
-    function swapLeftMost(){
+    function swapLeftMost() {
         leftMiddle.anchors.left = undefined
         leftMost.anchors.left = rightMost.right
 
+        //TODO: we could use a generic function instead of fixed assignments when shifting the positiong of the containers
         //shift all elements left by one position, and make leftMost become rightMost
         var oldLeftMost = leftMost
         leftMost = leftMiddle
@@ -103,7 +90,7 @@ Page{
         rightMost.index = modulus(middle.index + 2, imageController.galleryModel.count);
     }
 
-    function swapRightMost(){
+    function swapRightMost() {
         rightMost.anchors.left = undefined
         leftMost.anchors.left = rightMost.right
 
@@ -115,7 +102,6 @@ Page{
         leftMiddle = leftMost
         leftMost = oldRightMost
         leftMost.index = modulus(middle.index - 2, imageController.galleryModel.count);
-
     }
 
     NumberAnimation {
@@ -127,9 +113,11 @@ Page{
         duration: 300;
         easing.type: Easing.OutQuad
         onCompleted: {
-            if (Math.abs(to - from) > swipeThreshold){
-                if (from > to ) swapLeftMost()
-                else swapRightMost()
+            if (Math.abs(to - from) > swipeThreshold) {
+                if (from > to )
+                    swapLeftMost()
+                else
+                    swapRightMost()
                 //center flickable view, this allows endless scrolling
                 alignToCenter()
             }
@@ -141,68 +129,68 @@ Page{
 
     //create items and position them in a row,
     // ------ImageContainer must be child of the images controller -----
-    ImageContainer{
+    ImageContainer {
         id: one;
         x: leftMostOptimalX;
-        index:modulus(visibleIndex - 2, galleryModel.count)
+        index: modulus(visibleIndex - 2, galleryModel.count)
     }
-    ImageContainer{
+    ImageContainer {
         id: two
         anchors.left: one.right
-        index:modulus(visibleIndex - 1, galleryModel.count)
+        index: modulus(visibleIndex - 1, galleryModel.count)
     }
-    ImageContainer{
+    ImageContainer {
         id: three
         anchors.left: two.right
         index: visibleIndex
     }
-    ImageContainer{
+    ImageContainer {
         id: four
         anchors.left: three.right
-        index:modulus (visibleIndex + 1, galleryModel.count)
+        index: modulus (visibleIndex + 1, galleryModel.count)
     }
-    ImageContainer{
+    ImageContainer {
         id: five
         anchors.left: four.right
-        index:modulus (visibleIndex + 2, galleryModel.count)
+        index: modulus (visibleIndex + 2, galleryModel.count)
     }
 
 
-    MouseArea{
+    MouseArea {
         id: imgFlickable
         anchors.fill: parent
 
 
-        onPressed:{
+        onPressed: {
             firstPressX = mouseX
             pressX = mouseX
 
             //if the animation is running, make it stop and immediately slide to the image that you were going to
             //this allows very fast scrolling
             if (flickTo.running) flickTo.stop()
-
         }
 
         onPositionChanged: {
-            if (Math.abs(firstPressX - mouseX) > pinchThreshold && moving == false) moving = true
+            if (Math.abs(firstPressX - mouseX) > pinchThreshold && moving == false)
+                moving = true
 
             //Only move the image if we're sure the user isn't trying to pinch
-            if (moving){
+            if (moving) {
                 leftMost.x = leftMost.x - (pressX - mouseX)
                 pressX = mouseX
             }
         }
 
-        onReleased:{
-            if (middle.x >= swipeThreshold){
+        onReleased: {
+            if (middle.x >= swipeThreshold) {
                 //move it left
                 flickToX = leftMostOptimalX + imgContainerWidth
             }
-            else if (middle.x <= -swipeThreshold){
+            else if (middle.x <= -swipeThreshold) {
                 //move it right
                 flickToX = leftMostOptimalX -imgContainerWidth
             }
-            else{
+            else {
                 //bring it back
                 flickToX = leftMostOptimalX
             }

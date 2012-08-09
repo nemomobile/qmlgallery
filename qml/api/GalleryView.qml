@@ -33,15 +33,14 @@ import QtQuick 1.1
 import org.nemomobile.thumbnailer 1.0
 
 GridView {
+    id: grid
+    anchors.fill: parent
+
     // baseThumbnailSize is used to request images, and display size will be <=
     property int baseThumbnailSize: 160
     property int thumbnailSize: 0
     property int padding: 2
 
-    Component.onCompleted: updateThumbnailSize()
-    onPaddingChanged: updateThumbnailSize()
-    onBaseThumbnailSizeChanged: updateThumbnailSize()
- 
     // Calculate the thumbnail size to fit items of approximately 160px
     // onto each row with a minimal amount of extra space. The goal is
     // to avoid having a large unused area on the right edge.
@@ -53,13 +52,9 @@ GridView {
         console.log("XXX: Thumb size is " + thumbnailSize)
     }
 
-    Connections {
-        target: screen
-        onCurrentOrientationChanged: updateThumbnailSize()
-    }
-
-    id: grid
-    anchors.fill: parent
+    Component.onCompleted: updateThumbnailSize()
+    onPaddingChanged: updateThumbnailSize()
+    onBaseThumbnailSizeChanged: updateThumbnailSize()
 
     flow: GridView.LeftToRight
     maximumFlickVelocity: 3000
@@ -67,7 +62,12 @@ GridView {
     cellWidth: thumbnailSize + padding
     cacheBuffer: cellHeight * 3
 
-    Text{
+    Connections {
+        target: screen
+        onCurrentOrientationChanged: updateThumbnailSize()
+    }
+
+    Text {
         id: noElementsFoundText
         anchors.verticalCenter: parent.verticalCenter
         anchors.left: parent.left
@@ -77,7 +77,7 @@ GridView {
 
         visible: parent.model.count == 0 && parent.model.progress == 1.0
 
-        text : parent.model.filter == null ?  "No images yet..." : "No matching images found..."
+        text: parent.model.filter == null ?  "No images yet..." : "No matching images found..."
         color: "lightgrey"
         font.pointSize: 26
         horizontalAlignment: Text.AlignHCenter
