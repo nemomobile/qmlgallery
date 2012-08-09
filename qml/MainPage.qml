@@ -45,7 +45,7 @@ Page {
         delegate: GalleryDelegate {
             MouseArea {
                 anchors.fill: parent
-                onClicked: appWindow.pageStack.push(Qt.resolvedUrl("ImagePage.qml"), {imageId: index, galleryModel: gallery } )
+                onClicked: appWindow.pageStack.push(Qt.resolvedUrl("ImagePage.qml"), {visibleIndex: index, galleryModel: gallery} )
             }
         }
     }
