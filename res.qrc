@@ -1,5 +1,6 @@
 <RCC>
     <qresource>
+        <file>qml/ImageContainer.qml</file>
         <file>qml/ImagePage.qml</file>
         <file>qml/MainPage.qml</file>
         <file>qml/main.qml</file>
