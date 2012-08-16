@@ -36,19 +36,17 @@ import QtMobility.gallery 1.1
 Page {
     id: imageSlideshow
     anchors.fill: parent
-    clip: true
 
     property int slideVisibleTime: 4000
     property int visibleIndex
-    property real phase
+    property int phase
     property variant galleryModel
 
     Image {
         id: image1
         width: Math.min(sourceSize.width, parent.width)
         height: Math.min(sourceSize.height, parent.height)
-        x: (parent.width - width) * .5
-        y: (parent.height - height) * .5
+        anchors.centerIn: parent
         opacity: 1
         fillMode: Image.PreserveAspectFit
         Behavior on opacity { NumberAnimation { duration: 1000 } }
@@ -57,8 +55,7 @@ Page {
         id: image2
         width: Math.min(sourceSize.width, parent.width)
         height: Math.min(sourceSize.height, parent.height)
-        x: (parent.width - width) * .5
-        y: (parent.height - height) * .5
+        anchors.centerIn: parent
         opacity: 0
         fillMode: Image.PreserveAspectFit
         Behavior on opacity { NumberAnimation { duration: 1000 } }
