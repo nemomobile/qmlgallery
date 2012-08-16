@@ -30,6 +30,7 @@
  */
 
 import QtQuick 1.1
+import com.nokia.meego 1.0
 import org.nemomobile.thumbnailer 1.0
 
 GridView {
@@ -61,6 +62,11 @@ GridView {
     cellHeight: thumbnailSize + padding
     cellWidth: thumbnailSize + padding
     cacheBuffer: cellHeight * 3
+
+    ScrollDecorator {
+        flickableItem: grid
+        anchors.right: grid.right; anchors.bottom: grid.bottom
+    }
 
     Connections {
         target: screen
