@@ -44,6 +44,7 @@ Page {
 
     Image {
         id: image1
+        asynchronous: true
         width: Math.min(sourceSize.width, parent.width)
         height: Math.min(sourceSize.height, parent.height)
         anchors.centerIn: parent
@@ -53,6 +54,7 @@ Page {
     }
     Image {
         id: image2
+        asynchronous: true
         width: Math.min(sourceSize.width, parent.width)
         height: Math.min(sourceSize.height, parent.height)
         anchors.centerIn: parent
