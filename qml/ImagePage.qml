@@ -160,10 +160,12 @@ Page {
         id: imgFlickable
         anchors.fill: parent
 
+        property bool pressedForClick: false
 
         onPressed: {
             firstPressX = mouseX
             pressX = mouseX
+            pressedForClick = true
 
             //if the animation is running, make it stop and immediately slide to the image that you were going to
             //this allows very fast scrolling
@@ -171,8 +173,10 @@ Page {
         }
 
         onPositionChanged: {
-            if (Math.abs(firstPressX - mouseX) > pinchThreshold && moving == false)
+            if (Math.abs(firstPressX - mouseX) > pinchThreshold && moving == false) {
                 moving = true
+                pressedForClick = false
+            }
 
             //Only move the image if we're sure the user isn't trying to pinch
             if (moving) {
@@ -195,6 +199,11 @@ Page {
                 flickToX = leftMostOptimalX
             }
 
+            if (pressedForClick) {
+                appWindow.fullscreen = !appWindow.fullscreen
+                pressedForClick = false
+            }
+
             flickFromX = leftMost.x
             flickTo.start()
         }
@@ -215,7 +224,10 @@ Page {
         ToolIcon {
             platformIconId: "toolbar-back"
             anchors.left: (parent === undefined) ? undefined : parent.left
-            onClicked: appWindow.pageStack.pop()
+            onClicked: {
+                appWindow.fullscreen = false
+                appWindow.pageStack.pop()
+            }
         }
         ToolIcon {
             platformIconId: "toolbar-view-menu"

@@ -81,10 +81,12 @@ Page {
             mainLoop.stop()
             image1.source = ""
             image2.source = ""
+            appWindow.fullscreen = false
             appWindow.pageStack.pop()
         }
     }
     Component.onCompleted: {
+        appWindow.fullscreen = true
         if (visibleIndex < galleryModel.count) {
             phase = 0
             image1.source = galleryModel.get(visibleIndex).url
