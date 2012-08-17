@@ -55,13 +55,23 @@ Page {
         ToolIcon {
             platformIconId: "toolbar-view-menu"
             anchors.right: (parent === undefined) ? undefined : parent.right
-            //onClicked: (myMenu.status == DialogStatus.Closed) ? myMenu.open() : myMenu.close()
+            onClicked: (pageMenu.status === DialogStatus.Closed) ? pageMenu.open() : pageMenu.close()
+        }
+    }
+
+    Menu {
+        id: pageMenu
+        MenuLayout {
+            MenuItem {
+                text: "Slideshow"
+                onClicked: appWindow.pageStack.push(Qt.resolvedUrl("ImageSlideshowPage.qml"), {visibleIndex: 0, galleryModel: gallery})
+            }
         }
     }
 
     states: State {
         name: "active"
-        when: status == PageStatus.Active || status == PageStatus.Activating
+        when: status === PageStatus.Active || status === PageStatus.Activating
 
         PropertyChanges {
             target: appWindow.pageStack.toolBar

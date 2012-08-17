@@ -199,12 +199,28 @@ Page {
             flickTo.start()
         }
     }
+    Menu {
+        id: pageMenu
+        MenuLayout {
+            MenuItem {
+                text: "Slideshow"
+                onClicked: appWindow.pageStack.push(Qt.resolvedUrl("ImageSlideshowPage.qml"),
+                                                    {visibleIndex: imageController.visibleIndex,
+                                                    galleryModel: imageController.galleryModel} )
+            }
+        }
+    }
     ToolBarLayout {
         id: imgTools
         ToolIcon {
             platformIconId: "toolbar-back"
             anchors.left: (parent === undefined) ? undefined : parent.left
             onClicked: appWindow.pageStack.pop()
+        }
+        ToolIcon {
+            platformIconId: "toolbar-view-menu"
+            anchors.right: (parent === undefined) ? undefined : parent.right
+            onClicked: (pageMenu.status === DialogStatus.Closed) ? pageMenu.open() : pageMenu.close()
         }
     }
 }
