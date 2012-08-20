@@ -36,6 +36,9 @@ PageStackWindow {
     id: appWindow
 
     initialPage: mainPage
+    property bool fullscreen: false
+    showStatusBar: !fullscreen
+    showToolBar: !fullscreen
 
     MainPage {
         id: mainPage
