@@ -217,7 +217,8 @@ Page {
                 text: "Slideshow"
                 onClicked: appWindow.pageStack.push(Qt.resolvedUrl("ImageSlideshowPage.qml"),
                                                     {visibleIndex: imageController.middle.index,
-                                                    galleryModel: imageController.galleryModel} )
+                                                    galleryModel: imageController.galleryModel},
+                                                    true)
             }
         }
     }
