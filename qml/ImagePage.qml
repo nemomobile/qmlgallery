@@ -43,7 +43,9 @@ Page {
     property int imgContainerWidth: width
     property int imgContainerHeight: height
     property variant galleryModel
-    property int visibleIndex : -1
+    // XXX: This is not actually the visible index; it's the index shown when
+    // loading the page. Use middle.index instead. Should be refactored.
+    property int visibleIndex: 0
     property real firstPressX
     property real pressX
     property int flickToX: 0
@@ -214,7 +216,7 @@ Page {
             MenuItem {
                 text: "Slideshow"
                 onClicked: appWindow.pageStack.push(Qt.resolvedUrl("ImageSlideshowPage.qml"),
-                                                    {visibleIndex: imageController.visibleIndex,
+                                                    {visibleIndex: imageController.middle.index,
                                                     galleryModel: imageController.galleryModel} )
             }
         }
