@@ -9,6 +9,10 @@ INSTALLS += qml_api
 target.path = $$INSTALL_ROOT/usr/bin
 INSTALLS += target
 
+desktop.files = $${PROJECT_NAME}.desktop
+desktop.path = $$INSTALL_ROOT/usr/share/applications
+INSTALLS += desktop
+
 RESOURCES += res.qrc
 SOURCES += main.cpp
 
