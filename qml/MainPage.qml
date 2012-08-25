@@ -47,6 +47,7 @@ Page {
                 anchors.fill: parent
                 onClicked: appWindow.pageStack.push(Qt.resolvedUrl("ImagePage.qml"), {visibleIndex: index, galleryModel: gallery} )
             }
+
         }
     }
 

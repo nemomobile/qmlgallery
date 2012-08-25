@@ -31,16 +31,19 @@
 
 import QtQuick 1.1
 import com.nokia.meego 1.0
+import QtMobility.gallery 1.1
 
 Item {
     id: imgContainer
-
     property int index: -1
+    property variant imgController: imageController
+    property bool isVideo: galleryModel.isVideo(index)
+
+    //used inside ImagePage's imgFlickable to get the bounding rectangle of the image
+    property variant image: img
+
     width: imgController.imgContainerWidth
     height: imgController.imgContainerHeight
-
-    //This item has to be child of the controller
-    property variant imgController: parent
 
     function resetZoom() {
         //resetting all variables related to pinch-to-zoom
@@ -56,7 +59,7 @@ Item {
         anchors.fill: imgContainer
 
         //Disable the pincharea if the listview is scrolling, to avoid problems
-        enabled: !imgController.moving
+        enabled: (!imgController.moving && !isVideo)
         pinch.target: img
         pinch.maximumScale: 5
         pinch.dragAxis: Pinch.NoDrag
@@ -211,22 +214,26 @@ Item {
 
             Image {
                 id: img
-
-                //For Harmattan/Nemo ( THIS PART HAS TO BE FIXED , THE IMAGE IS NOT SCALED TO FILL THE SCREEN ATM)
-                property real imgRatio: galleryModel.get(index).width / galleryModel.get(index).height
-                property bool fitsVertically: imgRatio < (imgContainer.width / imgContainer.height)
                 width: (fitsVertically) ? (imgController.height * imgRatio) : imgController.width
                 height: (fitsVertically) ? (imgController.height) : (imgController.width / imgRatio)
 
-                //For Simulator:
-                //width: 480
-                //fillMode: Image.PreserveAspectFit
+                property int imgWidth: isVideo ? videoThumbnailSize : (info.available ? info.metaData.width : 0)
+                property int imgHeight: isVideo ? videoThumbnailSize : (info.available ? info.metaData.height : 0)
+                property real imgRatio: imgWidth / imgHeight
+                property bool fitsVertically: imgRatio < (imgContainer.width / imgContainer.height)
+
+                //DocumentGalleryItem automatically recognizes the rootType of the file
+                DocumentGalleryItem {
+                    id: info
+                    item: galleryModel.get(index).itemId
+                    autoUpdate: true
+                    properties: ["width", "height", "url"]
+                }
 
                 transformOrigin: Item.TopLeft
                 asynchronous: true
-                source: galleryModel.get(index).url
-                sourceSize.width: 2000
-                sourceSize.height: 2000
+                source: isVideo ? "qrc:/images/DefaultVideoThumbnail.jpg" : galleryModel.get(index).url
+                sourceSize.width: 1200
 
                 //Disable ListView scrolling if you're zooming
                 onScaleChanged: {
@@ -237,22 +244,14 @@ Item {
                 MouseArea {
                     anchors.fill: parent
 
-                    Timer {
-                        id: doubleClickTimer
-                        interval: 350
-                    }
-
-                    // onDoubleClicked seems broken on-device with all of the flickable/pincharea here
                     onClicked: {
-                        if (doubleClickTimer.running) resetZoom()
-                        else doubleClickTimer.start()
+                        if (!isVideo) {
+                            if (imgController.doubleClickTimer.running) resetZoom()
+                            else imgController.doubleClickTimer.start()
+                        }
                     }
                 }
             }
-
         }
-
     }
-
-
 }

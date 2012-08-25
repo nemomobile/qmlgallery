@@ -61,15 +61,36 @@ Page {
     //number of pixel you have to move before the Pinch Area is disabled
     property real pinchThreshold: 3
     property alias flickAreaEnabled: imgFlickable.enabled
+    property variant doubleClickTimer: timer
+    property int doubleClickInterval: 350
+    property int videoThumbnailSize: 480
 
     onWidthChanged: {
-        middle.resetZoom()
+        updateOnRotation()
+    }
+
+    function showVideoPlayer() {
+        appWindow.pageStack.push(Qt.resolvedUrl("VideoPlayer.qml"),
+                                 {videoSource: galleryModel.get(middle.index).url, imgController: imageController},
+                                 true)
+    }
+
+    function updateOnRotation() {
+        if (!middle.isVideo)
+            middle.resetZoom()
+
         alignToCenter()
     }
 
     function modulus(a, b) {
         if (a < 0) return (a+b) % b
         else return a % b
+    }
+
+    function isInside(x, y, rect) {
+        var rectAbsolute = rect.mapToItem(imageController, rect.x, rect.y)
+        return ((x > rectAbsolute.x) && (x < rectAbsolute.x + rect.width) &&
+                (y > rectAbsolute.y) && (y < rectAbsolute.y + rect.height))
     }
 
     function alignToCenter() {
@@ -89,7 +110,7 @@ Page {
         rightMiddle = rightMost
         rightMost = oldLeftMost
         //set the index (relative to galleryModel) of the image which has to be loaded by the shifted image container
-        rightMost.index = modulus(middle.index + 2, imageController.galleryModel.count);
+        rightMost.index = modulus(middle.index + 2, galleryModel.count);
     }
 
     function swapRightMost() {
@@ -103,7 +124,7 @@ Page {
         middle = leftMiddle
         leftMiddle = leftMost
         leftMost = oldRightMost
-        leftMost.index = modulus(middle.index - 2, imageController.galleryModel.count);
+        leftMost.index = modulus(middle.index - 2, galleryModel.count);
     }
 
     NumberAnimation {
@@ -129,40 +150,61 @@ Page {
         }
     }
 
-    //create items and position them in a row,
-    // ------ImageContainer must be child of the images controller -----
     ImageContainer {
         id: one;
         x: leftMostOptimalX;
-        index: modulus(visibleIndex - 2, galleryModel.count)
+        property int index: modulus(visibleIndex - 2, galleryModel.count)
     }
+
     ImageContainer {
         id: two
         anchors.left: one.right
-        index: modulus(visibleIndex - 1, galleryModel.count)
+        property int index: modulus(visibleIndex - 1, galleryModel.count)
     }
+
     ImageContainer {
         id: three
         anchors.left: two.right
-        index: visibleIndex
+        property int index: visibleIndex
     }
+
     ImageContainer {
         id: four
         anchors.left: three.right
-        index: modulus (visibleIndex + 1, galleryModel.count)
+        property int index: modulus (visibleIndex + 1, galleryModel.count)
     }
+
     ImageContainer {
         id: five
         anchors.left: four.right
-        index: modulus (visibleIndex + 2, galleryModel.count)
+        property int index: modulus (visibleIndex + 2, galleryModel.count)
     }
 
+    Timer {
+        id: timer
+        interval: doubleClickInterval
+    }
 
     MouseArea {
         id: imgFlickable
         anchors.fill: parent
 
         property bool pressedForClick: false
+
+        //HACK: this mousarea is disabled when the image is zoomed, and the mousearea inside the imageContainer's img is disabled when zoom factor is 1,
+        //so we have to get the doubleClick event here when the zoom factor is 1, and inside imageContainer's img when the image is zoomed.
+        //This is due to the high number of mouse areas (pincharea, flickable, multiple mouseareas) available in the same view
+        //Adding another MouseArea to handle this only made things worse
+        //comment added by faenil
+        onClicked: {
+            if (!imageController.moving && isInside(mouse.x, mouse.y, middle.image)) {
+                if (!middle.isVideo) {
+                    if (doubleClickTimer.running) {}  //TODO : IMPLEMENT ZOOM INSIDE THE CURLY BRACKETS
+                    else doubleClickTimer.start()
+                }
+                else showVideoPlayer()
+            }
+        }
 
         onPressed: {
             firstPressX = mouseX
@@ -210,6 +252,7 @@ Page {
             flickTo.start()
         }
     }
+
     Menu {
         id: pageMenu
         MenuLayout {
@@ -222,6 +265,7 @@ Page {
             }
         }
     }
+
     ToolBarLayout {
         id: imgTools
         ToolIcon {

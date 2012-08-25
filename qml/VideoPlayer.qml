@@ -29,32 +29,53 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
  */
 
-import QtMobility.gallery 1.1
+import QtQuick 1.1
+import com.nokia.meego 1.0
+import QtMultimediaKit 1.1
 
-DocumentGalleryModel {
-    id: gallery
+Page {
+    id: videoContainer
+    anchors.fill: parent
 
-    //this is to know if the item at index "index" is a video
-    function isVideo(index) {
-        var mimeString = get(index).mimeType.toString()
-        return (mimeString.substring(0,5) === "video")
+    tools: videoTools
+    orientationLock: PageOrientation.LockLandscape
+
+    property alias videoSource: videoItem.source
+    property variant imgController
+    property int index: -1
+
+    //force fullscreen = false, until we find a way to make the controls appear
+    //on top of the video without filtering
+    Component.onCompleted: appWindow.fullscreen = false
+
+    Video{
+        id: videoItem
+        anchors.fill: parent
+        fillMode: Video.PreserveAspectFit
+
+        Component.onCompleted: play()
+
+        MouseArea{
+            anchors.fill: parent
+            onClicked: !parent.paused ? parent.pause() : parent.play()
+        }
     }
 
-    autoUpdate: true
-    rootType: DocumentGallery.File
+   ToolBarLayout {
+        id: videoTools
 
-    filter: GalleryFilterUnion{
-        filters: [
-            GalleryStartsWithFilter{
-                property: "mimeType"
-                value: "image/"
-            },
-            GalleryStartsWithFilter{
-                property: "mimeType"
-                value: "video/"
+        ToolIcon {
+            platformIconId: "toolbar-back"
+            anchors.left: (parent === undefined) ? undefined : parent.left
+            onClicked: {
+                //Stopping the video wasn't enough, it would cause flickering
+                videoItem.source = ""
+                appWindow.pageStack.pop()
+
+                //alignToCenter is needed to avoid image alignment problems when we pop the page
+                imgController.alignToCenter()
             }
-        ]
+        }
     }
 
-    properties: [ "url", "mimeType" ]
 }

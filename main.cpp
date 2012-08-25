@@ -36,6 +36,7 @@
 #include <QDeclarativeContext>
 #include <QDebug>
 #include <QDir>
+#include <QGLWidget>
 #ifdef HAS_BOOSTER
 #include <applauncherd/MDeclarativeCache>
 #endif
@@ -57,6 +58,13 @@ int main(int argc, char **argv)
     application = &stackApp;
     view = &stackView;
 #endif
+
+	//NOTE: if we don't use a QGLWidget as viewport, the gallery lags once we load a video
+	//(you get the warning "QGLWindowSurface: Using plain widget as window surface QGLWindowSurface")
+ 	//and it won't stop lagging until you exit the app, in fact it seems the QGraphicsVideoItem
+ 	//used to play the video is never destroyed
+	QGLWidget *renderer = new QGLWidget();
+	view->setViewport(renderer);
 
     bool isFullscreen = false;
     QStringList arguments = application->arguments();
