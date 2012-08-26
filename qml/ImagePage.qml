@@ -64,22 +64,21 @@ Page {
     property variant doubleClickTimer: timer
     property int doubleClickInterval: 350
     property int videoThumbnailSize: 480
+    //This property forces the middle item to be visible on screen by keeping the leftMost item at x = leftMostOptimalX
+    //You have to set it to FALSE when you want to want to modify leftMost's x property, and set it back to true
+    //to be sure that the middle item will be the one centered on screen.
+    //(e.g. this is what flickTo NumberAnimation does)
+    property bool keepMiddleItemAligned: true
 
     onWidthChanged: {
-        updateOnRotation()
+        if (!middle.isVideo)
+            middle.resetZoom()
     }
 
     function showVideoPlayer() {
         appWindow.pageStack.push(Qt.resolvedUrl("VideoPlayer.qml"),
                                  {videoSource: galleryModel.get(middle.index).url, imgController: imageController},
                                  true)
-    }
-
-    function updateOnRotation() {
-        if (!middle.isVideo)
-            middle.resetZoom()
-
-        alignToCenter()
     }
 
     function modulus(a, b) {
@@ -91,10 +90,6 @@ Page {
         var rectAbsolute = rect.mapToItem(imageController, rect.x, rect.y)
         return ((x > rectAbsolute.x) && (x < rectAbsolute.x + rect.width) &&
                 (y > rectAbsolute.y) && (y < rectAbsolute.y + rect.height))
-    }
-
-    function alignToCenter() {
-        leftMost.x = leftMostOptimalX
     }
 
     function swapLeftMost() {
@@ -135,25 +130,34 @@ Page {
         to: flickToX;
         duration: 300;
         easing.type: Easing.OutQuad
+        onStarted: keepMiddleItemAligned = false
         onCompleted: {
             if (Math.abs(to - from) > swipeThreshold) {
                 if (from > to )
                     swapLeftMost()
                 else
                     swapRightMost()
-                //center flickable view, this allows endless scrolling
-                alignToCenter()
             }
 
+            keepMiddleItemAligned = true
             //This should be the only way the view can stop moving, so we set moving to false
             moving = false
         }
     }
 
+    //This is to keep the middle item visible on screen.
+    //Read the comment above the definition of keepMiddleItemAligned to know more
+    Binding {
+        target: leftMost
+        value: leftMostOptimalX
+        property: "x"
+        when: keepMiddleItemAligned
+    }
+
     ImageContainer {
         id: one;
-        x: leftMostOptimalX;
         index: modulus(visibleIndex - 2, galleryModel.count)
+        x: leftMostOptimalX
     }
 
     ImageContainer {

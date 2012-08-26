@@ -35,7 +35,6 @@ import QtMultimediaKit 1.1
 
 Page {
     id: videoContainer
-    anchors.fill: parent
 
     tools: videoTools
     orientationLock: PageOrientation.LockLandscape
@@ -45,17 +44,18 @@ Page {
     property int index: -1
 
     //force fullscreen = false, until we find a way to make the controls appear
-    //on top of the video without filtering
+    //on top of the video without flickering and slowdown
     Component.onCompleted: appWindow.fullscreen = false
 
-    Video{
+    Video {
         id: videoItem
         anchors.fill: parent
         fillMode: Video.PreserveAspectFit
 
+        //autoLoad: true doesn't seem to be working
         Component.onCompleted: play()
 
-        MouseArea{
+        MouseArea {
             anchors.fill: parent
             onClicked: !parent.paused ? parent.pause() : parent.play()
         }
@@ -71,9 +71,6 @@ Page {
                 //Stopping the video wasn't enough, it would cause flickering
                 videoItem.source = ""
                 appWindow.pageStack.pop()
-
-                //alignToCenter is needed to avoid image alignment problems when we pop the page
-                imgController.alignToCenter()
             }
         }
     }
