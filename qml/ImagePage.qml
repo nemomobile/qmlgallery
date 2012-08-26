@@ -153,31 +153,31 @@ Page {
     ImageContainer {
         id: one;
         x: leftMostOptimalX;
-        property int index: modulus(visibleIndex - 2, galleryModel.count)
+        index: modulus(visibleIndex - 2, galleryModel.count)
     }
 
     ImageContainer {
         id: two
         anchors.left: one.right
-        property int index: modulus(visibleIndex - 1, galleryModel.count)
+        index: modulus(visibleIndex - 1, galleryModel.count)
     }
 
     ImageContainer {
         id: three
         anchors.left: two.right
-        property int index: visibleIndex
+        index: visibleIndex
     }
 
     ImageContainer {
         id: four
         anchors.left: three.right
-        property int index: modulus (visibleIndex + 1, galleryModel.count)
+        index: modulus (visibleIndex + 1, galleryModel.count)
     }
 
     ImageContainer {
         id: five
         anchors.left: four.right
-        property int index: modulus (visibleIndex + 2, galleryModel.count)
+        index: modulus (visibleIndex + 2, galleryModel.count)
     }
 
     Timer {
@@ -199,7 +199,7 @@ Page {
         onClicked: {
             if (!imageController.moving && isInside(mouse.x, mouse.y, middle.image)) {
                 if (!middle.isVideo) {
-                    if (doubleClickTimer.running) {}  //TODO : IMPLEMENT ZOOM INSIDE THE CURLY BRACKETS
+                    if (doubleClickTimer.running) {}  //TODO: IMPLEMENT ZOOM-IN VIA DOUBLECLICK INSIDE THE CURLY BRACKETS
                     else doubleClickTimer.start()
                 }
                 else showVideoPlayer()
