@@ -1,5 +1,5 @@
 PROJECT_NAME = qmlgallery
-QT += declarative
+QT += declarative opengl
 
 # qml API we provide
 qml_api.files = qml/api/*

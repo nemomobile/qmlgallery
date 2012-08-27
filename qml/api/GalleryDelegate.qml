@@ -32,6 +32,7 @@
 import QtQuick 1.1
 
 Image {
+    id: del
     width: GridView.view.thumbnailSize
     height: GridView.view.thumbnailSize
 
@@ -39,6 +40,6 @@ Image {
     // end hack
 
     asynchronous: true
-    source: "image://nemoThumbnail/" + url
+    source: GridView.view.model.isVideo(index) ? "qrc:/images/GridVideoThumbnail.jpg" : "image://nemoThumbnail/" + url
 }
 

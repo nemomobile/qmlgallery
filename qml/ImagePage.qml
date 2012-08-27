@@ -61,10 +61,24 @@ Page {
     //number of pixel you have to move before the Pinch Area is disabled
     property real pinchThreshold: 3
     property alias flickAreaEnabled: imgFlickable.enabled
+    property variant doubleClickTimer: timer
+    property int doubleClickInterval: 350
+    property int videoThumbnailSize: 480
+    //This property forces the middle item to be visible on screen by keeping the leftMost item at x = leftMostOptimalX
+    //You have to set it to FALSE when you want to want to modify leftMost's x property, and set it back to true
+    //to be sure that the middle item will be the one centered on screen.
+    //(e.g. this is what flickTo NumberAnimation does)
+    property bool keepMiddleItemAligned: true
 
     onWidthChanged: {
-        middle.resetZoom()
-        alignToCenter()
+        if (!middle.isVideo)
+            middle.resetZoom()
+    }
+
+    function showVideoPlayer() {
+        appWindow.pageStack.push(Qt.resolvedUrl("VideoPlayer.qml"),
+                                 {videoSource: galleryModel.get(middle.index).url, imgController: imageController},
+                                 true)
     }
 
     function modulus(a, b) {
@@ -72,8 +86,10 @@ Page {
         else return a % b
     }
 
-    function alignToCenter() {
-        leftMost.x = leftMostOptimalX
+    function isInside(x, y, rect) {
+        var rectAbsolute = rect.mapToItem(imageController, rect.x, rect.y)
+        return ((x > rectAbsolute.x) && (x < rectAbsolute.x + rect.width) &&
+                (y > rectAbsolute.y) && (y < rectAbsolute.y + rect.height))
     }
 
     function swapLeftMost() {
@@ -89,7 +105,7 @@ Page {
         rightMiddle = rightMost
         rightMost = oldLeftMost
         //set the index (relative to galleryModel) of the image which has to be loaded by the shifted image container
-        rightMost.index = modulus(middle.index + 2, imageController.galleryModel.count);
+        rightMost.index = modulus(middle.index + 2, galleryModel.count);
     }
 
     function swapRightMost() {
@@ -103,7 +119,7 @@ Page {
         middle = leftMiddle
         leftMiddle = leftMost
         leftMost = oldRightMost
-        leftMost.index = modulus(middle.index - 2, imageController.galleryModel.count);
+        leftMost.index = modulus(middle.index - 2, galleryModel.count);
     }
 
     NumberAnimation {
@@ -114,55 +130,85 @@ Page {
         to: flickToX;
         duration: 300;
         easing.type: Easing.OutQuad
+        onStarted: keepMiddleItemAligned = false
         onCompleted: {
             if (Math.abs(to - from) > swipeThreshold) {
                 if (from > to )
                     swapLeftMost()
                 else
                     swapRightMost()
-                //center flickable view, this allows endless scrolling
-                alignToCenter()
             }
 
+            keepMiddleItemAligned = true
             //This should be the only way the view can stop moving, so we set moving to false
             moving = false
         }
     }
 
-    //create items and position them in a row,
-    // ------ImageContainer must be child of the images controller -----
+    //This is to keep the middle item visible on screen.
+    //Read the comment above the definition of keepMiddleItemAligned to know more
+    Binding {
+        target: leftMost
+        value: leftMostOptimalX
+        property: "x"
+        when: keepMiddleItemAligned
+    }
+
     ImageContainer {
         id: one;
-        x: leftMostOptimalX;
         index: modulus(visibleIndex - 2, galleryModel.count)
+        x: leftMostOptimalX
     }
+
     ImageContainer {
         id: two
         anchors.left: one.right
         index: modulus(visibleIndex - 1, galleryModel.count)
     }
+
     ImageContainer {
         id: three
         anchors.left: two.right
         index: visibleIndex
     }
+
     ImageContainer {
         id: four
         anchors.left: three.right
         index: modulus (visibleIndex + 1, galleryModel.count)
     }
+
     ImageContainer {
         id: five
         anchors.left: four.right
         index: modulus (visibleIndex + 2, galleryModel.count)
     }
 
+    Timer {
+        id: timer
+        interval: doubleClickInterval
+    }
 
     MouseArea {
         id: imgFlickable
         anchors.fill: parent
 
         property bool pressedForClick: false
+
+        //HACK: this mousarea is disabled when the image is zoomed, and the mousearea inside the imageContainer's img is disabled when zoom factor is 1,
+        //so we have to get the doubleClick event here when the zoom factor is 1, and inside imageContainer's img when the image is zoomed.
+        //This is due to the high number of mouse areas (pincharea, flickable, multiple mouseareas) available in the same view
+        //Adding another MouseArea to handle this only made things worse
+        //comment added by faenil
+        onClicked: {
+            if (!imageController.moving && isInside(mouse.x, mouse.y, middle.image)) {
+                if (!middle.isVideo) {
+                    if (doubleClickTimer.running) {}  //TODO: IMPLEMENT ZOOM-IN VIA DOUBLECLICK INSIDE THE CURLY BRACKETS
+                    else doubleClickTimer.start()
+                }
+                else showVideoPlayer()
+            }
+        }
 
         onPressed: {
             firstPressX = mouseX
@@ -210,6 +256,7 @@ Page {
             flickTo.start()
         }
     }
+
     Menu {
         id: pageMenu
         MenuLayout {
@@ -222,6 +269,7 @@ Page {
             }
         }
     }
+
     ToolBarLayout {
         id: imgTools
         ToolIcon {
