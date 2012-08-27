@@ -40,7 +40,7 @@ Item {
     property bool isVideo: galleryModel.isVideo(index)
 
     //used inside ImagePage's imgFlickable to get the bounding rectangle of the image
-    property variant image: img
+    property alias image: img
 
     width: imgController.imgContainerWidth
     height: imgController.imgContainerHeight
@@ -217,8 +217,8 @@ Item {
                 width: (fitsVertically) ? (imgController.height * imgRatio) : imgController.width
                 height: (fitsVertically) ? (imgController.height) : (imgController.width / imgRatio)
 
-                property int imgWidth: isVideo ? videoThumbnailSize : (info.available ? info.metaData.width : 0)
-                property int imgHeight: isVideo ? videoThumbnailSize : (info.available ? info.metaData.height : 0)
+                property int imgWidth: isVideo ? videoThumbnailSize : (info.available ? info.metaData.width : -1)
+                property int imgHeight: isVideo ? videoThumbnailSize : (info.available ? info.metaData.height : -1)
                 property real imgRatio: imgWidth / imgHeight
                 property bool fitsVertically: imgRatio < (imgContainer.width / imgContainer.height)
 

@@ -40,8 +40,6 @@ Page {
     orientationLock: PageOrientation.LockLandscape
 
     property alias videoSource: videoItem.source
-    property variant imgController
-    property int index: -1
 
     //force fullscreen = false, until we find a way to make the controls appear
     //on top of the video without flickering and slowdown
