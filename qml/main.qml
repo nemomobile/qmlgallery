@@ -47,14 +47,4 @@ PageStackWindow {
     Component.onCompleted: {
         theme.inverted = true
     }
-
-    /*Menu {
-        id: myMenu
-        visualParent: pageStack
-        MenuLayout {
-            MenuItem { text: qsTr("Open image")
-                onClicked: appWindow.pageStack.push(imagepage)
-            }
-        }
-    }*/
 }
