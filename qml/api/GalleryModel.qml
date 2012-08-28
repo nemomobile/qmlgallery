@@ -75,9 +75,6 @@ DocumentGalleryModel {
             var mimeString = get(index).mimeType.toString()
             return (mimeString.substring(0,5) === "video")
         }
-        else {
-            console.log("ERROR: trying to access model data with an invalid index (-1)")
-        }
     }
 
     autoUpdate: true
