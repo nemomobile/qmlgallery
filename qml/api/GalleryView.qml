@@ -50,7 +50,6 @@ GridView {
         // Ideally, this would use (padding*(itemsPerRow-1)), but GridView's
         // behavior on cellWidth requires the rightmost item to have padding.
         thumbnailSize = Math.floor((width - padding * itemsPerRow) / itemsPerRow)
-        console.log("XXX: Thumb size is " + thumbnailSize)
     }
 
     Component.onCompleted: updateThumbnailSize()
