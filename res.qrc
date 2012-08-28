@@ -1,9 +1,12 @@
 <RCC>
-    <qresource>
+    <qresource prefix="/">
         <file>qml/ImageContainer.qml</file>
         <file>qml/ImagePage.qml</file>
         <file>qml/MainPage.qml</file>
         <file>qml/main.qml</file>
         <file>qml/ImageSlideshowPage.qml</file>
+        <file>qml/VideoPlayer.qml</file>
+        <file>images/DefaultVideoThumbnail.jpg</file>
+        <file>images/GridVideoThumbnail.jpg</file>
     </qresource>
 </RCC>

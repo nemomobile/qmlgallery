@@ -83,7 +83,7 @@ GridView {
 
         visible: parent.model.count == 0 && parent.model.progress == 1.0
 
-        text: parent.model.filter == null ?  "No images yet..." : "No matching images found..."
+        text: "No elements found..."
         color: "lightgrey"
         font.pointSize: 26
         horizontalAlignment: Text.AlignHCenter
