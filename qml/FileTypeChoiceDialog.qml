@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 John Brooks <john.brooks@dereferenced.net>
+ * Copyright (C) 2012 Andrea Bernabei <and.bernabei@gmail.com>
  *
  * You may use this file under the terms of the BSD license as follows:
  *
@@ -28,19 +28,38 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
  */
-
 import QtQuick 1.1
+import com.nokia.meego 1.0
 
-Image {
-    id: del
-    width: GridView.view.thumbnailSize
-    height: GridView.view.thumbnailSize
+SelectionDialog {
+    id: mediaTypeFilterDialog
+    titleText: "Choose file type"
+    model: ListModel {
+        ListElement {name: "Videos only"}
+        ListElement {name: "Images only"}
+        ListElement {name: "Both"}
+    }
 
-    sourceSize: Qt.size(GridView.view.baseThumbnailSize, GridView.view.baseThumbnailSize)
-    // end hack
+    //we show Both videos and photos by default,
+    //and we don't destroy this Dialog once it's created, so we don't need to check the current filtering status
+    selectedIndex: 2
 
-    asynchronous: true
-    //index is -1 when filters the model is reinitialized (e.g. filters change) so we have to treat that case too
-    source: (index == -1) ? "" : (GridView.view.model.isVideo(index) ? "qrc:/images/GridVideoThumbnail.jpg" : "image://nemoThumbnail/" + url)
+    onSelectedIndexChanged: {
+        switch(model.get(selectedIndex).name) {
+        case "Videos only":
+            var vidFilter = gallery.createFilter(gallery, "videosfilter", "GalleryStartsWithFilter", "mimeType", "video/")
+            gallery.assignNewDestroyCurrent(vidFilter)
+            break;
+        case "Images only":
+            var imgFilter = gallery.createFilter(gallery,  "imagesfilter", "GalleryStartsWithFilter", "mimeType", "image/")
+            gallery.assignNewDestroyCurrent(imgFilter)
+            break;
+        case "Both":
+            var videoFilter = gallery.createFilter(gallery, "videosfilter", "GalleryStartsWithFilter", "mimeType", "video/")
+            var imageFilter = gallery.createFilter(gallery, "imagesfilter", "GalleryStartsWithFilter", "mimeType", "image/")
+            var bothFilter = gallery.createFiltersArray(gallery, "arraysFilter", "GalleryFilterUnion", [videoFilter, imageFilter])
+            gallery.assignNewDestroyCurrent(bothFilter)
+            break;
+        }
+    }
 }
-

@@ -51,6 +51,11 @@ Page {
         }
     }
 
+    Loader {
+        id: typeChoiceLoader
+        anchors.fill: parent
+    }
+
     ToolBarLayout {
         id: mainTools
         ToolIcon {
@@ -66,6 +71,13 @@ Page {
             MenuItem {
                 text: "Slideshow"
                 onClicked: appWindow.pageStack.push(Qt.resolvedUrl("ImageSlideshowPage.qml"), {visibleIndex: 0, galleryModel: gallery})
+            }
+            MenuItem {
+                text: "Change type of shown files"
+                onClicked: {
+                    typeChoiceLoader.source = Qt.resolvedUrl("FileTypeChoiceDialog.qml")
+                    typeChoiceLoader.item.open()
+                }
             }
         }
     }
