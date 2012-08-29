@@ -77,7 +77,7 @@ Page {
 
     function showVideoPlayer() {
         appWindow.pageStack.push(Qt.resolvedUrl("VideoPlayer.qml"),
-                                 {videoSource: galleryModel.get(middle.index).url, imgController: imageController},
+                                 {videoSource: galleryModel.get(middle.index).url},
                                  true)
     }
 
