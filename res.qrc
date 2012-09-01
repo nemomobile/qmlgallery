@@ -9,5 +9,6 @@
         <file>images/DefaultVideoThumbnail.jpg</file>
         <file>images/GridVideoThumbnail.jpg</file>
         <file>qml/FileTypeChoiceDialog.qml</file>
+        <file>qml/SortDialog.qml</file>
     </qresource>
 </RCC>

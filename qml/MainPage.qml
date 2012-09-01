@@ -55,6 +55,10 @@ Page {
         id: typeChoiceLoader
         anchors.fill: parent
     }
+    Loader {
+        id: sortChoiceLoader
+        anchors.fill: parent
+    }
 
     ToolBarLayout {
         id: mainTools
@@ -77,6 +81,13 @@ Page {
                 onClicked: {
                     typeChoiceLoader.source = Qt.resolvedUrl("FileTypeChoiceDialog.qml")
                     typeChoiceLoader.item.open()
+                }
+            }
+            MenuItem {
+                text: "Sort content"
+                onClicked: {
+                    sortChoiceLoader.source = Qt.resolvedUrl("SortDialog.qml")
+                    sortChoiceLoader.item.open()
                 }
             }
         }
