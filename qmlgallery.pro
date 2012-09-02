@@ -14,7 +14,10 @@ desktop.path = $$INSTALL_ROOT/usr/share/applications
 INSTALLS += desktop
 
 RESOURCES += res.qrc
-SOURCES += main.cpp
+
+HEADERS += src/gallery.h
+SOURCES += main.cpp \
+    src/gallery.cpp
 
 # do not edit below here
 TEMPLATE = app
@@ -22,6 +25,7 @@ CONFIG -= app_bundle
 TARGET = $$PROJECT_NAME
 
 CONFIG += link_pkgconfig
+PKGCONFIG += libresourceqt1
 
 packagesExist(qdeclarative-boostable) {
     message("Building with qdeclarative-boostable support")
