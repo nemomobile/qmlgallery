@@ -47,7 +47,6 @@ Page {
         // using gallery model with Image document type.
         // The document type cannot be changed after initialization.
         function filterContent(galleryType, filter) {
-            console.debug("Filtering content");
             var sortProperties = gallery.sortProperties;
 
             if ( galleryType === "Image") {
@@ -102,12 +101,10 @@ Page {
         }
     }
 
-    // Two loaders needed to keep modified sort model intact
     Loader {
         id: choiceLoader
         anchors.fill: parent
     }
-
 
     ToolBarLayout {
         id: mainTools
