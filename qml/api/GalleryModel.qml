@@ -80,5 +80,5 @@ DocumentGalleryModel {
     autoUpdate: true
     rootType: DocumentGallery.File
 
-    properties: [ "url", "mimeType", "dateTaken", "fileName", "fileExtension" ]
+    properties: [ "url", "mimeType"]
 }

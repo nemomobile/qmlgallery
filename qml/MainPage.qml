@@ -32,14 +32,66 @@
 import QtQuick 1.1
 import com.nokia.meego 1.0
 import org.nemomobile.qmlgallery 1.0
+import QtMobility.gallery 1.1
 
 Page {
     anchors.fill: parent
     tools: mainTools
 
     GalleryView {
-        model: GalleryModel {
-            id: gallery
+
+        id: galleryView
+
+        // Function to handle changing model according to filter and gallery type
+        // Image files have date sorting possibility which is achieved only by
+        // using gallery model with Image document type.
+        // The document type cannot be changed after initialization.
+        function filterContent(galleryType, filter) {
+            console.debug("Filtering content");
+            var sortProperties = gallery.sortProperties;
+
+            if ( galleryType === "Image") {
+                gallery = imageGallery;
+                if (sortModel.get(0).name !== "Date taken") {
+                    sortModel.insert(0, {"name":"Date taken", "ascending":true});
+                    // maintain sorting selection
+                    if ( pageMenu.sortSelection >= 0 ) {
+                        pageMenu.sortSelection++;
+                    }
+                }
+            }else {
+                gallery = fileGallery;
+                console.debug(sortModel.get(0).name);
+                if (sortModel.get(0).name === "Date taken") {
+                    sortModel.remove(0);
+                    // maintain sorting selection
+                    if ( pageMenu.sortSelection > 0 ) {
+                        pageMenu.sortSelection--;
+                    }
+                    else {
+                        pageMenu.sortSelection = -1;
+                    }
+                }
+            }
+            gallery.sortProperties = sortProperties;
+            if ( filter ) {
+                gallery.assignNewDestroyCurrent(filter);
+            }
+        }
+
+        property variant gallery: fileGallery;
+
+        model: gallery;
+
+        // We need two models to support Date taken filtering on images
+        // because Document rootType can't be changed after initialization
+        GalleryModel {
+            id: fileGallery
+            rootType: DocumentGallery.File
+        }
+        GalleryModel {
+            id: imageGallery
+            rootType: DocumentGallery.Image
         }
 
         delegate: GalleryDelegate {
@@ -47,18 +99,15 @@ Page {
                 anchors.fill: parent
                 onClicked: appWindow.pageStack.push(Qt.resolvedUrl("ImagePage.qml"), {visibleIndex: index, galleryModel: gallery} )
             }
-
         }
     }
 
+    // Two loaders needed to keep modified sort model intact
     Loader {
-        id: typeChoiceLoader
+        id: choiceLoader
         anchors.fill: parent
     }
-    Loader {
-        id: sortChoiceLoader
-        anchors.fill: parent
-    }
+
 
     ToolBarLayout {
         id: mainTools
@@ -71,6 +120,11 @@ Page {
 
     Menu {
         id: pageMenu
+
+        // store selections here for restoring destroyed dialog state
+        property int filterSelection: 2;
+        property int sortSelection: -1;
+
         MenuLayout {
             MenuItem {
                 text: "Slideshow"
@@ -79,15 +133,15 @@ Page {
             MenuItem {
                 text: "Change type of shown files"
                 onClicked: {
-                    typeChoiceLoader.source = Qt.resolvedUrl("FileTypeChoiceDialog.qml")
-                    typeChoiceLoader.item.open()
+                    choiceLoader.source = Qt.resolvedUrl("FileTypeChoiceDialog.qml")
+                    choiceLoader.item.open()
                 }
             }
             MenuItem {
                 text: "Sort content"
                 onClicked: {
-                    sortChoiceLoader.source = Qt.resolvedUrl("SortDialog.qml")
-                    sortChoiceLoader.item.open()
+                    choiceLoader.source = Qt.resolvedUrl("SortDialog.qml")
+                    choiceLoader.item.open()
                 }
             }
         }
@@ -112,5 +166,14 @@ Page {
             property: "opacity"
             duration: 250
         }
+    }
+
+    // Store the file sort model here to keep modified ascending properties intact
+    // after loading another dialog in same loader
+    ListModel {
+        id: sortModel
+        ListElement {name: "Filename"; ascending: true}
+        ListElement {name: "Filetype"; ascending: true}
+        ListElement {name: "Clear sorting"; ascending: false}// dummy
     }
 }

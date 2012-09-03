@@ -10,5 +10,7 @@
         <file>images/GridVideoThumbnail.jpg</file>
         <file>qml/FileTypeChoiceDialog.qml</file>
         <file>qml/SortDialog.qml</file>
+        <file>images/down_arrow.png</file>
+        <file>images/up_arrow.png</file>
     </qresource>
 </RCC>
