@@ -40,25 +40,24 @@ SelectionDialog {
         ListElement {name: "Both"}
     }
 
-    //we show Both videos and photos by default,
-    //and we don't destroy this Dialog once it's created, so we don't need to check the current filtering status
-    selectedIndex: 2
+    selectedIndex: pageMenu.filterSelection
 
     onSelectedIndexChanged: {
+        pageMenu.filterSelection = selectedIndex;
         switch(model.get(selectedIndex).name) {
         case "Videos only":
             var vidFilter = gallery.createFilter(gallery, "videosfilter", "GalleryStartsWithFilter", "mimeType", "video/")
-            gallery.assignNewDestroyCurrent(vidFilter)
+            gallery.assignNewDestroyCurrent(vidFilter);
             break;
         case "Images only":
             var imgFilter = gallery.createFilter(gallery,  "imagesfilter", "GalleryStartsWithFilter", "mimeType", "image/")
-            gallery.assignNewDestroyCurrent(imgFilter)
+            gallery.assignNewDestroyCurrent(imgFilter);
             break;
         case "Both":
             var videoFilter = gallery.createFilter(gallery, "videosfilter", "GalleryStartsWithFilter", "mimeType", "video/")
             var imageFilter = gallery.createFilter(gallery, "imagesfilter", "GalleryStartsWithFilter", "mimeType", "image/")
             var bothFilter = gallery.createFiltersArray(gallery, "arraysFilter", "GalleryFilterUnion", [videoFilter, imageFilter])
-            gallery.assignNewDestroyCurrent(bothFilter)
+            gallery.assignNewDestroyCurrent(bothFilter);
             break;
         }
     }
