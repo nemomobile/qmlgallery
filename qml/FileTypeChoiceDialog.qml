@@ -46,18 +46,18 @@ SelectionDialog {
         pageMenu.filterSelection = selectedIndex;
         switch(model.get(selectedIndex).name) {
         case "Videos only":
-            var vidFilter = galleryView.gallery.createFilter(galleryView.gallery, "videosfilter", "GalleryStartsWithFilter", "mimeType", "video/")
-            galleryView.filterContent("File", vidFilter);
+            var vidFilter = gallery.createFilter(gallery, "videosfilter", "GalleryStartsWithFilter", "mimeType", "video/")
+            gallery.assignNewDestroyCurrent(vidFilter);
             break;
         case "Images only":
-            var imgFilter = galleryView.gallery.createFilter(galleryView.gallery,  "imagesfilter", "GalleryStartsWithFilter", "mimeType", "image/")
-            galleryView.filterContent("Image", imgFilter);
+            var imgFilter = gallery.createFilter(gallery,  "imagesfilter", "GalleryStartsWithFilter", "mimeType", "image/")
+            gallery.assignNewDestroyCurrent(imgFilter);
             break;
         case "Both":
-            var videoFilter = galleryView.gallery.createFilter(galleryView.gallery, "videosfilter", "GalleryStartsWithFilter", "mimeType", "video/")
-            var imageFilter = galleryView.gallery.createFilter(galleryView.gallery, "imagesfilter", "GalleryStartsWithFilter", "mimeType", "image/")
-            var bothFilter = galleryView.gallery.createFiltersArray(galleryView.gallery, "arraysFilter", "GalleryFilterUnion", [videoFilter, imageFilter])
-            galleryView.filterContent("File", bothFilter);
+            var videoFilter = gallery.createFilter(gallery, "videosfilter", "GalleryStartsWithFilter", "mimeType", "video/")
+            var imageFilter = gallery.createFilter(gallery, "imagesfilter", "GalleryStartsWithFilter", "mimeType", "image/")
+            var bothFilter = gallery.createFiltersArray(gallery, "arraysFilter", "GalleryFilterUnion", [videoFilter, imageFilter])
+            gallery.assignNewDestroyCurrent(bothFilter);
             break;
         }
     }

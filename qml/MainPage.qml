@@ -40,57 +40,8 @@ Page {
 
     GalleryView {
 
-        id: galleryView
-
-        // Function to handle changing model according to filter and gallery type
-        // Image files have date sorting possibility which is achieved only by
-        // using gallery model with Image document type.
-        // The document type cannot be changed after initialization.
-        function filterContent(galleryType, filter) {
-            var sortProperties = gallery.sortProperties;
-
-            if ( galleryType === "Image") {
-                gallery = imageGallery;
-                if (sortModel.get(0).name !== "Date taken") {
-                    sortModel.insert(0, {"name":"Date taken", "ascending":true});
-                    // maintain sorting selection
-                    if ( pageMenu.sortSelection >= 0 ) {
-                        pageMenu.sortSelection++;
-                    }
-                }
-            }else {
-                gallery = fileGallery;
-                console.debug(sortModel.get(0).name);
-                if (sortModel.get(0).name === "Date taken") {
-                    sortModel.remove(0);
-                    // maintain sorting selection
-                    if ( pageMenu.sortSelection > 0 ) {
-                        pageMenu.sortSelection--;
-                    }
-                    else {
-                        pageMenu.sortSelection = -1;
-                    }
-                }
-            }
-            gallery.sortProperties = sortProperties;
-            if ( filter ) {
-                gallery.assignNewDestroyCurrent(filter);
-            }
-        }
-
-        property variant gallery: fileGallery;
-
-        model: gallery;
-
-        // We need two models to support Date taken filtering on images
-        // because Document rootType can't be changed after initialization
-        GalleryModel {
-            id: fileGallery
-            rootType: DocumentGallery.File
-        }
-        GalleryModel {
-            id: imageGallery
-            rootType: DocumentGallery.Image
+        model: GalleryModel {
+            id: gallery
         }
 
         delegate: GalleryDelegate {
@@ -163,14 +114,5 @@ Page {
             property: "opacity"
             duration: 250
         }
-    }
-
-    // Store the file sort model here to keep modified ascending properties intact
-    // after loading another dialog in same loader
-    ListModel {
-        id: sortModel
-        ListElement {name: "Filename"; ascending: true}
-        ListElement {name: "Filetype"; ascending: true}
-        ListElement {name: "Clear sorting"; ascending: false}// dummy
     }
 }

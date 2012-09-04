@@ -5,8 +5,12 @@ import QtMobility.gallery 1.1
 SelectionDialog {
 
     titleText: "Sort by"
-    model: sortModel
-
+    model: ListModel {
+        id: sortModel
+        ListElement {name: "Filename"; ascending: true}
+        ListElement {name: "Filetype"; ascending: true}
+        ListElement {name: "Clear sorting"; ascending: false}// dummy
+    }
 
     // Handle item selection here instead in selectedIndexChanged to react on same selection
     function itemSelected(selection) {
@@ -16,33 +20,25 @@ SelectionDialog {
         }
         selectedIndex = selection;
         switch(model.get(selection).name) {
-        case "Date taken":
-            if ( model.get(selection).ascending ) {
-                galleryView.gallery.sortProperties = ["dateTaken"];
-            }
-            else {
-                galleryView.gallery.sortProperties = ["-dateTaken"];
-            }
-            break;
         case "Filename":
             if ( model.get(selection).ascending ) {
-                galleryView.gallery.sortProperties = ["fileName"];
+                gallery.sortProperties = ["fileName"];
             }
             else {
-                galleryView.gallery.sortProperties = ["-fileName"];
+                gallery.sortProperties = ["-fileName"];
             }
             break;
         case "Filetype":
             if ( model.get(selection).ascending ) {
-                galleryView.gallery.sortProperties = ["mimeType"];
+                gallery.sortProperties = ["mimeType"];
             }
             else {
-                galleryView.gallery.sortProperties = ["-mimeType"];
+                gallery.sortProperties = ["-mimeType"];
             }
             break;
         case "Clear sorting":
             selectedIndex = -1;
-            galleryView.gallery.sortProperties = [""];
+            gallery.sortProperties = [""];
             break;
         }
         pageMenu.sortSelection = selectedIndex;
