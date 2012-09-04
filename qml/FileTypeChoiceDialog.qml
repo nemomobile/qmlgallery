@@ -47,19 +47,16 @@ SelectionDialog {
         switch(model.get(selectedIndex).name) {
         case "Videos only":
             var vidFilter = galleryView.gallery.createFilter(galleryView.gallery, "videosfilter", "GalleryStartsWithFilter", "mimeType", "video/")
-           // gallery.assignNewDestroyCurrent(vidFilter)
             galleryView.filterContent("File", vidFilter);
             break;
         case "Images only":
             var imgFilter = galleryView.gallery.createFilter(galleryView.gallery,  "imagesfilter", "GalleryStartsWithFilter", "mimeType", "image/")
-            //gallery.assignNewDestroyCurrent(imgFilter)
-            galleryView.filterContent("Image", vidFilter);
+            galleryView.filterContent("Image", imgFilter);
             break;
         case "Both":
             var videoFilter = galleryView.gallery.createFilter(galleryView.gallery, "videosfilter", "GalleryStartsWithFilter", "mimeType", "video/")
             var imageFilter = galleryView.gallery.createFilter(galleryView.gallery, "imagesfilter", "GalleryStartsWithFilter", "mimeType", "image/")
             var bothFilter = galleryView.gallery.createFiltersArray(galleryView.gallery, "arraysFilter", "GalleryFilterUnion", [videoFilter, imageFilter])
-            //gallery.assignNewDestroyCurrent(bothFilter)
             galleryView.filterContent("File", bothFilter);
             break;
         }
