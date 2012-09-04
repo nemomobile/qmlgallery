@@ -1,16 +1,9 @@
 import QtQuick 1.1
 import com.nokia.meego 1.0
-import QtMobility.gallery 1.1
 
 SelectionDialog {
 
     titleText: "Sort by"
-    model: ListModel {
-        id: sortModel
-        ListElement {name: "Filename"; ascending: true}
-        ListElement {name: "Filetype"; ascending: true}
-        ListElement {name: "Clear sorting"; ascending: false}// dummy
-    }
 
     // Handle item selection here instead in selectedIndexChanged to react on same selection
     function itemSelected(selection) {
@@ -42,6 +35,13 @@ SelectionDialog {
             break;
         }
         pageMenu.sortSelection = selectedIndex;
+    }
+
+    model: ListModel {
+        id: sortModel
+        ListElement {name: "Filename"; ascending: true}
+        ListElement {name: "Filetype"; ascending: true}
+        ListElement {name: "Clear sorting"; ascending: false}// dummy
     }
 
     selectedIndex: pageMenu.sortSelection;
