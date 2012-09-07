@@ -16,7 +16,7 @@ INSTALLS += desktop
 RESOURCES += res.qrc
 
 HEADERS += src/gallery.h
-SOURCES += main.cpp \
+SOURCES += src/main.cpp \
     src/gallery.cpp
 
 # do not edit below here
