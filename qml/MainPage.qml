@@ -38,6 +38,7 @@ Page {
     tools: mainTools
 
     GalleryView {
+
         model: GalleryModel {
             id: gallery
         }
@@ -47,12 +48,11 @@ Page {
                 anchors.fill: parent
                 onClicked: appWindow.pageStack.push(Qt.resolvedUrl("ImagePage.qml"), {visibleIndex: index, galleryModel: gallery} )
             }
-
         }
     }
 
     Loader {
-        id: typeChoiceLoader
+        id: choiceLoader
         anchors.fill: parent
     }
 
@@ -67,6 +67,11 @@ Page {
 
     Menu {
         id: pageMenu
+
+        // store selections here for restoring destroyed dialog state
+        property int filterSelection: 2;
+        property int sortSelection: -1;
+
         MenuLayout {
             MenuItem {
                 text: "Slideshow"
@@ -75,8 +80,15 @@ Page {
             MenuItem {
                 text: "Change type of shown files"
                 onClicked: {
-                    typeChoiceLoader.source = Qt.resolvedUrl("FileTypeChoiceDialog.qml")
-                    typeChoiceLoader.item.open()
+                    choiceLoader.source = Qt.resolvedUrl("FileTypeChoiceDialog.qml")
+                    choiceLoader.item.open()
+                }
+            }
+            MenuItem {
+                text: "Sort content"
+                onClicked: {
+                    choiceLoader.source = Qt.resolvedUrl("SortDialog.qml")
+                    choiceLoader.item.open()
                 }
             }
         }
