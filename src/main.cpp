@@ -29,14 +29,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
  */
 
-#include <QDesktopServices>
 #include <QApplication>
 #include <QDeclarativeView>
-#include <QDeclarativeEngine>
-#include <QDeclarativeContext>
-#include <QDebug>
-#include <QDir>
-#include <QGLWidget>
+#include "src/gallery.h"
 #ifdef HAS_BOOSTER
 #include <applauncherd/MDeclarativeCache>
 #endif
@@ -59,42 +54,7 @@ int main(int argc, char **argv)
     view = &stackView;
 #endif
 
-	//NOTE: if we don't use a QGLWidget as viewport, the gallery lags once we load a video
-	//(you get the warning "QGLWindowSurface: Using plain widget as window surface QGLWindowSurface")
- 	//and it won't stop lagging until you exit the app, in fact it seems the QGraphicsVideoItem
- 	//used to play the video is never destroyed
-	QGLWidget *renderer = new QGLWidget();
-	view->setViewport(renderer);
-
-    bool isFullscreen = false;
-    QStringList arguments = application->arguments();
-    for (int i = 0; i < arguments.count(); ++i) {
-        QString parameter = arguments.at(i);
-        if (parameter == "-fullscreen") {
-            isFullscreen = true;
-        } else if (parameter == "-help") {
-            qDebug() << "Gallery application";
-            qDebug() << "-fullscreen   - show QML fullscreen";
-            exit(0);
-        }
-    }
-
-    QObject::connect(view->engine(), SIGNAL(quit()), application, SLOT(quit()));
-
-    if (QFile::exists("main.qml"))
-        view->setSource(QUrl::fromLocalFile("main.qml"));
-    else
-        view->setSource(QUrl("qrc:/qml/main.qml"));
-
-    view->setAttribute(Qt::WA_OpaquePaintEvent);
-    view->setAttribute(Qt::WA_NoSystemBackground);
-    view->viewport()->setAttribute(Qt::WA_OpaquePaintEvent);
-    view->viewport()->setAttribute(Qt::WA_NoSystemBackground);
-
-    if (isFullscreen)
-        view->showFullScreen();
-    else
-        view->show();
+    Gallery gallery(view);
 
     return application->exec();
 }
