@@ -8,43 +8,24 @@ SelectionDialog {
     // Handle item selection here instead in selectedIndexChanged to react on same selection
     function itemSelected(selection) {
         // Check if we need to change from asc to desc or vice versa
-        if ( selection === selectedIndex ) {
+        if (selection === selectedIndex)
             model.setProperty(selection, "ascending", !model.get(selection).ascending);
-        }
-        selectedIndex = selection;
-        switch(model.get(selection).name) {
-        case "Filename":
-            if ( model.get(selection).ascending ) {
-                gallery.sortProperties = ["fileName"];
-            }
-            else {
-                gallery.sortProperties = ["-fileName"];
-            }
-            break;
-        case "Filetype":
-            if ( model.get(selection).ascending ) {
-                gallery.sortProperties = ["mimeType"];
-            }
-            else {
-                gallery.sortProperties = ["-mimeType"];
-            }
-            break;
-        case "Clear sorting":
-            selectedIndex = -1;
-            gallery.sortProperties = [""];
-            break;
-        }
-        pageMenu.sortSelection = selectedIndex;
+
+        var property = model.get(selection).sortProperty
+        if (property && model.get(selection).ascending)
+            property = "-" + property
+        gallery.sortProperties = [ property ]
+
+        if (property) 
+            selectedIndex = selection
+        else
+            selectedIndex = -1
+
+        currentSort = selectedIndex
     }
 
-    model: ListModel {
-        id: sortModel
-        ListElement {name: "Filename"; ascending: true}
-        ListElement {name: "Filetype"; ascending: true}
-        ListElement {name: "Clear sorting"; ascending: false}// dummy
-    }
-
-    selectedIndex: pageMenu.sortSelection;
+    model: sortModel
+    selectedIndex: currentSort
 
     // Delegate modified from default meego SelectionDialog delegate
     delegate: Component {
@@ -52,12 +33,11 @@ SelectionDialog {
 
         Item {
             id: delegateItem
-            property bool selected: index === selectedIndex;
+            property bool selected: index === selectedIndex
 
             height: root.platformStyle.itemHeight
             anchors.left: parent.left
             anchors.right: parent.right
-
 
             MouseArea {
                 id: delegateMouseArea
