@@ -43,7 +43,12 @@ Page {
 
     //force fullscreen = false, until we find a way to make the controls appear
     //on top of the video without flickering and slowdown
-    Component.onCompleted: appWindow.fullscreen = false
+    Component.onCompleted: {
+        appWindow.fullscreen = false
+        gallery.acquireVideoResources()
+    }
+
+    Component.onDestruction: gallery.releaseVideoResources()
 
     Video {
         id: videoItem
