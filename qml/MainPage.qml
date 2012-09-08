@@ -56,6 +56,22 @@ Page {
         anchors.fill: parent
     }
 
+    property int currentFilter: 0
+    ListModel {
+        id: filterModel
+        ListElement { name: "Images & Video" }
+        ListElement { name: "Video only" }
+        ListElement { name: "Images only" }
+    }
+
+    property int currentSort: -1
+    ListModel {
+        id: sortModel
+        ListElement { name: "Filename"; sortProperty: "fileName"; ascending: true }
+        ListElement { name: "File type"; sortProperty: "mimeType"; ascending: true }
+        ListElement { name: "Clear sorting"; sortProperty: ""; ascending: false } // dummy
+    }
+
     ToolBarLayout {
         id: mainTools
         ToolIcon {
@@ -68,28 +84,24 @@ Page {
     Menu {
         id: pageMenu
 
-        // store selections here for restoring destroyed dialog state
-        property int filterSelection: 2;
-        property int sortSelection: -1;
-
         MenuLayout {
             MenuItem {
-                text: "Slideshow"
-                onClicked: appWindow.pageStack.push(Qt.resolvedUrl("ImageSlideshowPage.qml"), {visibleIndex: 0, galleryModel: gallery})
-            }
-            MenuItem {
-                text: "Change type of shown files"
+                text: "Filter: " + filterModel.get(currentFilter).name
                 onClicked: {
                     choiceLoader.source = Qt.resolvedUrl("FileTypeChoiceDialog.qml")
                     choiceLoader.item.open()
                 }
             }
             MenuItem {
-                text: "Sort content"
+                text: (currentSort >= 0) ? ("Sort: " + sortModel.get(currentSort).name) : "Sort"
                 onClicked: {
                     choiceLoader.source = Qt.resolvedUrl("SortDialog.qml")
                     choiceLoader.item.open()
                 }
+            }
+            MenuItem {
+                text: "Slideshow"
+                onClicked: appWindow.pageStack.push(Qt.resolvedUrl("ImageSlideshowPage.qml"), { visibleIndex: 0, galleryModel: gallery })
             }
         }
     }
