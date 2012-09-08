@@ -33,32 +33,29 @@ import com.nokia.meego 1.0
 
 SelectionDialog {
     id: mediaTypeFilterDialog
-    titleText: "Choose file type"
-    model: ListModel {
-        ListElement {name: "Videos only"}
-        ListElement {name: "Images only"}
-        ListElement {name: "Both"}
-    }
+    titleText: "Filter"
 
-    selectedIndex: pageMenu.filterSelection
+    model: filterModel
+    selectedIndex: currentFilter
 
     onSelectedIndexChanged: {
-        pageMenu.filterSelection = selectedIndex;
-        switch(model.get(selectedIndex).name) {
-        case "Videos only":
-            var vidFilter = gallery.createFilter(gallery, "videosfilter", "GalleryStartsWithFilter", "mimeType", "video/")
-            gallery.assignNewDestroyCurrent(vidFilter);
-            break;
-        case "Images only":
-            var imgFilter = gallery.createFilter(gallery,  "imagesfilter", "GalleryStartsWithFilter", "mimeType", "image/")
-            gallery.assignNewDestroyCurrent(imgFilter);
-            break;
-        case "Both":
+        currentFilter = selectedIndex
+
+        switch (selectedIndex) {
+        case 0:
             var videoFilter = gallery.createFilter(gallery, "videosfilter", "GalleryStartsWithFilter", "mimeType", "video/")
             var imageFilter = gallery.createFilter(gallery, "imagesfilter", "GalleryStartsWithFilter", "mimeType", "image/")
             var bothFilter = gallery.createFiltersArray(gallery, "arraysFilter", "GalleryFilterUnion", [videoFilter, imageFilter])
-            gallery.assignNewDestroyCurrent(bothFilter);
-            break;
+            gallery.assignNewDestroyCurrent(bothFilter)
+            break
+        case 1:
+            var vidFilter = gallery.createFilter(gallery, "videosfilter", "GalleryStartsWithFilter", "mimeType", "video/")
+            gallery.assignNewDestroyCurrent(vidFilter)
+            break
+        case 2:
+            var imgFilter = gallery.createFilter(gallery,  "imagesfilter", "GalleryStartsWithFilter", "mimeType", "image/")
+            gallery.assignNewDestroyCurrent(imgFilter)
+            break
         }
     }
 }
