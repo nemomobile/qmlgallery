@@ -61,8 +61,7 @@ Page {
     //number of pixel you have to move before the Pinch Area is disabled
     property real pinchThreshold: 3
     property alias flickAreaEnabled: imgFlickable.enabled
-    property variant doubleClickTimer: timer
-    property int doubleClickInterval: 350
+    property variant doubleClickTimer: middle.image.doubleClickTimer
     property int videoThumbnailSize: 480
     //This property forces the middle item to be visible on screen by keeping the leftMost item at x = leftMostOptimalX
     //You have to set it to FALSE when you want to want to modify leftMost's x property, and set it back to true
@@ -72,7 +71,7 @@ Page {
 
     onWidthChanged: {
         if (!middle.isVideo)
-            middle.resetZoom()
+            middle.image.resetZoom()
     }
 
     function showVideoPlayer() {
@@ -184,15 +183,11 @@ Page {
         index: modulus (visibleIndex + 2, galleryModel.count)
     }
 
-    Timer {
-        id: timer
-        interval: doubleClickInterval
-    }
 
     MouseArea {
         id: imgFlickable
         anchors.fill: parent
-
+        enabled: middle.image.flickEnabled
         property bool pressedForClick: false
 
         //HACK: this mousarea is disabled when the image is zoomed, and the mousearea inside the imageContainer's img is disabled when zoom factor is 1,

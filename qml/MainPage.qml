@@ -126,4 +126,5 @@ Page {
             duration: 250
         }
     }
+
 }

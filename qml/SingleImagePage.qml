@@ -28,29 +28,47 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
  */
-
 import QtQuick 1.1
 import com.nokia.meego 1.0
 
-PageStackWindow {
-    id: appWindow
+Page {
+    id: singleImagePage
+    anchors.fill: parent
+    clip: true
+    tools: singleImageTools
+    property string filename: ""
 
-    initialPage: mainPage
-    property bool fullscreen: false
-    showStatusBar: !fullscreen
-    showToolBar: !fullscreen
-
-    MainPage {
-        id: mainPage
+    ImageDisplay {
+        id: singleImage
+        source: parent.filename
+        // @todo a lot of this is shared with ImageContainer.
+        // See if it could be refactored inside ImageDisplay
+        width: (fitsVertically) ? (singleImagePage.height * imgRatio) : singleImagePage.width
+        height: (fitsVertically) ? (singleImagePage.height) : (singleImagePage.width / imgRatio)
+        pageWidth: singleImagePage.width
+        pageHeight: singleImagePage.height
+        property int imgWidth: imageInfo.width
+        property int imgHeight: imageInfo.height
+        property real imgRatio: imgWidth / imgHeight
+        property bool fitsVertically: imgRatio < (pageWidth / pageHeight)
     }
 
-    Component.onCompleted: {
-        theme.inverted = true
+    Image {
+        id: imageInfo
+        source: filename
+        asynchronous: false
+        visible: false
     }
 
-    function displayFile(filename) {
-        console.log("displayFile:" + filename)
-        appWindow.pageStack.pop(null) // Unwind to top of the stack, wherever we are
-        appWindow.pageStack.push(Qt.resolvedUrl("SingleImagePage.qml"), { filename: filename })
+    ToolBarLayout {
+        id: singleImageTools
+        ToolIcon {
+            platformIconId: "toolbar-back"
+            anchors.left: (parent === undefined) ? undefined : parent.left
+            onClicked: {
+                appWindow.fullscreen = false
+                appWindow.pageStack.pop()
+            }
+        }
     }
 }

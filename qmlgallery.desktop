@@ -3,8 +3,9 @@ Version=1.0
 Type=Application
 Terminal=false
 Name=Gallery
-Exec=invoker -s --type=d /usr/bin/qmlgallery -fullscreen
+Exec=invoker -s --type=d /usr/bin/qmlgallery -fullscreen %U
 Icon=icons-Applications-photos
 X-Window-Icon=
 X-HildonDesk-ShowInToolbar=true
 X-Osso-Type=application/x-executable
+MimeType=image/gif;image/jpeg;image/png;image/svg+xml;
