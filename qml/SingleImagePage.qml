@@ -34,7 +34,6 @@ import com.nokia.meego 1.0
 Page {
     id: singleImagePage
     anchors.fill: parent
-    clip: true
     tools: singleImageTools
     property string filename: ""
 
@@ -54,6 +53,8 @@ Page {
     }
 
     Image {
+        // @todo Used just for getting image dimensions to ImageDisplay. Could be
+        // refactored away with ImageDisplay.
         id: imageInfo
         source: filename
         asynchronous: false

@@ -32,18 +32,7 @@ packagesExist(qdeclarative-boostable) {
     DEFINES += HAS_BOOSTER
     PKGCONFIG += qdeclarative-boostable
 } else {
-    warning("qdeclarative-boostable not available; startup times will be slow er")                                                                         
+    warning("qdeclarative-boostable not available; startup times will be slower")
 }
-
-OTHER_FILES += \
-    qtc_packaging/debian_harmattan/rules \
-    qtc_packaging/debian_harmattan/README \
-    qtc_packaging/debian_harmattan/manifest.aegis \
-    qtc_packaging/debian_harmattan/copyright \
-    qtc_packaging/debian_harmattan/control \
-    qtc_packaging/debian_harmattan/compat \
-    qtc_packaging/debian_harmattan/changelog \
-    qml/SingleImagePage.qml \
-    qml/ImageDisplay.qml
 
 OTHER_FILES += qml/* qml/api/*

@@ -60,7 +60,6 @@ Page {
     property real leftMostOptimalX: -width*2
     //number of pixel you have to move before the Pinch Area is disabled
     property real pinchThreshold: 3
-    property alias flickAreaEnabled: imgFlickable.enabled
     property variant doubleClickTimer: middle.image.doubleClickTimer
     property int videoThumbnailSize: 480
     //This property forces the middle item to be visible on screen by keeping the leftMost item at x = leftMostOptimalX
