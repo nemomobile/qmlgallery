@@ -266,6 +266,7 @@ Page {
                                                     {visibleIndex: imageController.middle.index,
                                                     galleryModel: imageController.galleryModel},
                                                     true)
+                enabled: galleryModel.count > 0
             }
         }
     }
