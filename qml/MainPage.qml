@@ -102,6 +102,7 @@ Page {
             MenuItem {
                 text: "Slideshow"
                 onClicked: appWindow.pageStack.push(Qt.resolvedUrl("ImageSlideshowPage.qml"), { visibleIndex: 0, galleryModel: gallery })
+                enabled: gallery.count > 0
             }
         }
     }
