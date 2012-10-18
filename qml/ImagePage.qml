@@ -43,9 +43,6 @@ Page {
     property int imgContainerWidth: width
     property int imgContainerHeight: height
     property variant galleryModel
-    // XXX: This is not actually the visible index; it's the index shown when
-    // loading the page. Use middle.index instead. Should be refactored.
-    property int visibleIndex: 0
     property real firstPressX
     property real pressX
     property int flickToX: 0
@@ -56,6 +53,27 @@ Page {
     property variant middle: three
     property variant rightMiddle: four
     property variant rightMost: five
+
+    //this is the index which has to be passed as a parameter when creating this page
+    //it will only be used for initialization
+    property int parameterIndex
+
+    //this is to make so that when visibleIndex is changed the image containers have already been
+    //initialized
+    Component.onCompleted: visibleIndex = parameterIndex
+
+    //this will make so that every time visibleIndex is changed, the image containers will all load
+    //the correct images.
+    //visibleIndex is the reliable source to know what index is currently being displayed on screen
+    onVisibleIndexChanged: {
+        leftMost.index = modulus(visibleIndex - 2, galleryModel.count);
+        leftMiddle.index = modulus(visibleIndex - 1, galleryModel.count);
+        middle.index = modulus(visibleIndex, galleryModel.count);
+        rightMiddle.index = modulus(visibleIndex + 1, galleryModel.count);
+        rightMost.index = modulus(visibleIndex + 2, galleryModel.count);
+    }
+
+    property int visibleIndex
     property real swipeThreshold: 40
     property real leftMostOptimalX: -width*2
     //number of pixel you have to move before the Pinch Area is disabled
@@ -104,8 +122,8 @@ Page {
         middle = rightMiddle
         rightMiddle = rightMost
         rightMost = oldLeftMost
-        //set the index (relative to galleryModel) of the image which has to be loaded by the shifted image container
-        rightMost.index = modulus(middle.index + 2, galleryModel.count);
+
+        visibleIndex = middle.index;
     }
 
     function swapRightMost() {
@@ -119,7 +137,9 @@ Page {
         middle = leftMiddle
         leftMiddle = leftMost
         leftMost = oldRightMost
-        leftMost.index = modulus(middle.index - 2, galleryModel.count);
+
+        visibleIndex = middle.index;
+
     }
 
     NumberAnimation {
@@ -154,35 +174,16 @@ Page {
         when: keepMiddleItemAligned
     }
 
-    ImageContainer {
-        id: one;
-        index: modulus(visibleIndex - 2, galleryModel.count)
-        x: leftMostOptimalX
-    }
+    ImageContainer { id: one; x: leftMostOptimalX }
 
-    ImageContainer {
-        id: two
-        anchors.left: one.right
-        index: modulus(visibleIndex - 1, galleryModel.count)
-    }
+    ImageContainer { id: two; anchors.left: one.right }
 
-    ImageContainer {
-        id: three
-        anchors.left: two.right
-        index: visibleIndex
-    }
+    //this is the item which is in the middle by default
+    ImageContainer { id: three; anchors.left: two.right }
 
-    ImageContainer {
-        id: four
-        anchors.left: three.right
-        index: modulus (visibleIndex + 1, galleryModel.count)
-    }
+    ImageContainer { id: four; anchors.left: three.right }
 
-    ImageContainer {
-        id: five
-        anchors.left: four.right
-        index: modulus (visibleIndex + 2, galleryModel.count)
-    }
+    ImageContainer { id: five; anchors.left: four.right }
 
     Timer {
         id: timer
@@ -263,8 +264,9 @@ Page {
             MenuItem {
                 text: "Slideshow"
                 onClicked: appWindow.pageStack.push(Qt.resolvedUrl("ImageSlideshowPage.qml"),
-                                                    {visibleIndex: imageController.middle.index,
-                                                    galleryModel: imageController.galleryModel},
+                                                    { visibleIndex: imageController.visibleIndex,
+                                                        controller: imageController,
+                                                        galleryModel: imageController.galleryModel },
                                                     true)
                 enabled: galleryModel.count > 0
             }

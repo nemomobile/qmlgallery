@@ -38,6 +38,12 @@ Page {
     anchors.fill: parent
 
     property int slideVisibleTime: 4000
+
+    //this is to make so that when the slideshow page is popped, the list view will be showing the
+    //last element displayed while in slideshow mode
+    //Related to: NEMO#402
+    property variant controller
+
     property int visibleIndex
     property int phase
     property variant galleryModel
@@ -52,6 +58,7 @@ Page {
         fillMode: Image.PreserveAspectFit
         Behavior on opacity { NumberAnimation { duration: 1000 } }
     }
+
     Image {
         id: image2
         asynchronous: true
@@ -62,6 +69,7 @@ Page {
         fillMode: Image.PreserveAspectFit
         Behavior on opacity { NumberAnimation { duration: 1000 } }
     }
+
     SequentialAnimation {
         id: mainLoop
         loops: Animation.Infinite
@@ -73,11 +81,20 @@ Page {
             }
         }
         PauseAnimation { duration: 1001 }
-        ScriptAction { script: loadNextImage() }
+        ScriptAction {
+            script: {
+                visibleIndex++
+                if (visibleIndex >= galleryModel.count)
+                    visibleIndex = 0
+                loadNextImage()
+            }
+        }
     }
+
     MouseArea {
         anchors.fill: parent
         onPressed: {
+            if (controller != undefined) controller.visibleIndex = visibleIndex
             mainLoop.stop()
             image1.source = ""
             image2.source = ""
@@ -85,24 +102,20 @@ Page {
             appWindow.pageStack.pop()
         }
     }
+
     Component.onCompleted: {
         appWindow.fullscreen = true
-        if (visibleIndex < galleryModel.count) {
-            phase = 0
-            image1.source = galleryModel.get(visibleIndex).url
-            loadNextImage()
-            mainLoop.start()
-        }
+        phase = 0
+        image1.source = galleryModel.get(visibleIndex).url
+        loadNextImage()
+        mainLoop.start()
     }
-    function loadNextImage() {
-        visibleIndex++
-        if (visibleIndex >= galleryModel.count)
-            visibleIndex = 0
 
+    function loadNextImage() {
         if (phase === 0)
-            image2.source = galleryModel.get(visibleIndex).url
+            image2.source = galleryModel.get((visibleIndex + 1) % galleryModel.count).url
         else
-            image1.source = galleryModel.get(visibleIndex).url
+            image1.source = galleryModel.get((visibleIndex + 1) % galleryModel.count).url
         phase = 1-phase
     }
 }
