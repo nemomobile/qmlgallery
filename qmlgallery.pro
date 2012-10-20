@@ -32,5 +32,7 @@ packagesExist(qdeclarative-boostable) {
     DEFINES += HAS_BOOSTER
     PKGCONFIG += qdeclarative-boostable
 } else {
-    warning("qdeclarative-boostable not available; startup times will be slow er")                                                                         
+    warning("qdeclarative-boostable not available; startup times will be slower")
 }
+
+OTHER_FILES += qml/* qml/api/*

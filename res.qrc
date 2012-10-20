@@ -12,5 +12,7 @@
         <file>qml/SortDialog.qml</file>
         <file>images/down_arrow.png</file>
         <file>images/up_arrow.png</file>
+        <file>qml/SingleImagePage.qml</file>
+        <file>qml/ImageDisplay.qml</file>
     </qresource>
 </RCC>

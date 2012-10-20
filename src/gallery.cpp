@@ -36,12 +36,18 @@
 #include <QDir>
 #include <QGLWidget>
 #include <QDebug>
+#include <QFile>
+#include <QFileInfo>
+#include <QMetaObject>
+#include <QGraphicsObject>
+#include <QUrl>
 
 Gallery::Gallery(QDeclarativeView *v, QObject *parent)
     : QObject(parent), view(v)
 {
     bool isFullscreen = false;
     bool glwidget = true;
+    QFile fileToOpen;
     foreach (QString parameter, qApp->arguments()) {
         if (parameter == "-fullscreen") {
             isFullscreen = true;
@@ -50,8 +56,11 @@ Gallery::Gallery(QDeclarativeView *v, QObject *parent)
             qDebug() << "-fullscreen   - show QML fullscreen";
             qDebug() << "-no-glwidget  - Don't use QGLWidget viewport";
             exit(0);
-        } else if (parameter == "-no-glwidget")
+        } else if (parameter == "-no-glwidget") {
             glwidget = false;
+        } else if(parameter != qApp->arguments().first() && !fileToOpen.exists()){
+            fileToOpen.setFileName(parameter);
+        }
     }
 
     // See NEMO#415 for an explanation of why this may be necessary.
@@ -84,6 +93,19 @@ Gallery::Gallery(QDeclarativeView *v, QObject *parent)
         view->showFullScreen();
     else
         view->show();
+
+    if(!fileToOpen.fileName().isNull()) {
+        if(fileToOpen.exists()) {
+            QFileInfo fileInfo(fileToOpen);
+            QUrl fileUrl("file://" + fileInfo.absoluteFilePath());
+            qDebug() << "Opening file url " << fileUrl.toString();
+            if(view->rootObject()) {
+                QMetaObject::invokeMethod(view->rootObject(), "displayFile", Q_ARG(QVariant, QVariant(fileUrl.toString())));
+            }
+        } else {
+            qDebug() << "File " << fileToOpen.fileName() << " does not exist.";
+        }
+    }
 }
 
 void Gallery::acquireVideoResources()
