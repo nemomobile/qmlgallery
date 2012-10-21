@@ -190,6 +190,13 @@ Page {
         interval: doubleClickInterval
     }
 
+    Timer {
+        id: toolbarAutohideTimer
+        interval: 2500
+        running: true
+        onTriggered: appWindow.fullscreen = true
+    }
+
     MouseArea {
         id: imgFlickable
         anchors.fill: parent
@@ -250,7 +257,14 @@ Page {
 
             if (pressedForClick) {
                 appWindow.fullscreen = !appWindow.fullscreen
+                if (appWindow.fullscreen) toolbarAutohideTimer.stop()
+                else toolbarAutohideTimer.start()
                 pressedForClick = false
+            }
+            else {
+                //restart the timer if the user performs something different than a tap
+                //and we're in not-fullscreen mode which implies the timer is already running
+                if (toolbarAutohideTimer.running) toolbarAutohideTimer.restart()
             }
 
             flickFromX = leftMost.x
