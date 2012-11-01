@@ -40,8 +40,6 @@ Page {
     clip: true
     tools: imgTools
 
-    property int imgContainerWidth: width
-    property int imgContainerHeight: height
     property variant galleryModel
     property real firstPressX
     property real pressX

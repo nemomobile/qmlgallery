@@ -38,7 +38,6 @@ Item {
     property int index: -1
     property variant pinchingController
 
-    property variant imgController: imageController
     property variant pageStack
     property string imageSource: ""
     property string videoSource: ""
@@ -49,8 +48,8 @@ Item {
     property int doubleClickInterval: 350
     property int videoThumbnailSize: 480
 
-    width: imgController.imgContainerWidth
-    height: imgController.imgContainerHeight
+    width: parent.width
+    height: parent.height
 
     signal clickedWhileZoomed()
 
@@ -95,8 +94,8 @@ Item {
 
         Image {
             id: img
-            width: (fitsVertically) ? (imgController.height * imgRatio) : imgController.width
-            height: (fitsVertically) ? (imgController.height) : (imgController.width / imgRatio)
+            width: (fitsVertically) ? (imgContainer.height * imgRatio) : imgContainer.width
+            height: (fitsVertically) ? (imgContainer.height) : (imgContainer.width / imgRatio)
 
             property int imgWidth: isVideo ? videoThumbnailSize : implicitWidth
             property int imgHeight: isVideo ? videoThumbnailSize : implicitHeight
