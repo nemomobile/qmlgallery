@@ -47,80 +47,75 @@ Item {
     width: imgController.imgContainerWidth
     height: imgController.imgContainerHeight
 
-    Item {
-        id: rect
+    Flickable {
+        id: flickImg
+
         anchors.centerIn: parent
+        width: Math.min(img.width*img.scale, imgContainer.width)
+        height: Math.min(img.height*img.scale, imgContainer.height)
 
-        width: Math.min(img.width*img.scale, parent.width)
-        height: Math.min(img.height*img.scale, parent.height)
+        transformOrigin: Item.TopLeft
 
-        Flickable {
-            id: flickImg
+        interactive: img.scale > 1
+        contentWidth: img.width * img.scale
+        contentHeight: img.height * img.scale
 
-            anchors.fill: rect
+        onContentWidthChanged: {
+            //this check is because the first time this slot is called, pinchingController isn't set yet
+            if (pinchingController) {
+                pinchingController.updateContentX()
+                pinchingController.updateContentY()
+            }
+        }
+        onContentHeightChanged: {
+            if (pinchingController) {
+                pinchingController.updateContentX()
+                pinchingController.updateContentY()
+            }
+        }
+
+        Image {
+            id: img
+            width: (fitsVertically) ? (imgController.height * imgRatio) : imgController.width
+            height: (fitsVertically) ? (imgController.height) : (imgController.width / imgRatio)
+
+            property int imgWidth: isVideo ? videoThumbnailSize : (info.available ? info.metaData.width : -1)
+            property int imgHeight: isVideo ? videoThumbnailSize : (info.available ? info.metaData.height : -1)
+            property real imgRatio: imgWidth / imgHeight
+            property bool fitsVertically: imgRatio < (imgContainer.width / imgContainer.height)
+
+            //DocumentGalleryItem automatically recognizes the rootType of the file
+            DocumentGalleryItem {
+                id: info
+                item: galleryModel.get(index).itemId
+                autoUpdate: true
+                properties: ["width", "height", "url"]
+            }
+
             transformOrigin: Item.TopLeft
+            asynchronous: true
+            source: isVideo ? "qrc:/images/DefaultVideoThumbnail.jpg" : galleryModel.get(index).url
+            sourceSize.width: 1200
 
-            interactive: img.scale > 1
-            contentWidth: img.width * img.scale
-            contentHeight: img.height * img.scale
-
-            onContentWidthChanged: {
-                //this check is because the first time this slot is called, pinchingController isn't set yet
-                if (pinchingController) {
-                    pinchingController.updateContentX()
-                    pinchingController.updateContentY()
-                }
-            }
-            onContentHeightChanged: {
-                if (pinchingController) {
-                    pinchingController.updateContentX()
-                    pinchingController.updateContentY()
-                }
+            //Disable ListView scrolling if you're zooming
+            onScaleChanged: {
+                if (scale != 1 && imgController.flickAreaEnabled == true) imgController.flickAreaEnabled = false
+                else if (scale == 1 && imgController.flickAreaEnabled == false) imgController.flickAreaEnabled = true
             }
 
-            Image {
-                id: img
-                width: (fitsVertically) ? (imgController.height * imgRatio) : imgController.width
-                height: (fitsVertically) ? (imgController.height) : (imgController.width / imgRatio)
+            MouseArea {
+                anchors.fill: parent
 
-                property int imgWidth: isVideo ? videoThumbnailSize : (info.available ? info.metaData.width : -1)
-                property int imgHeight: isVideo ? videoThumbnailSize : (info.available ? info.metaData.height : -1)
-                property real imgRatio: imgWidth / imgHeight
-                property bool fitsVertically: imgRatio < (imgContainer.width / imgContainer.height)
+                onPressed: {
+                    //setting mouse.accepted to false means we'll only receive the onPressed of this event,
+                    //the rest will be propagated to the area underneath
+                    //if img.scale == 1 send events underneath, otherwise emit the signal (to make it
+                    //propagate beyond the Flickable parent)
+                    if (img.scale == 1) mouse.accepted = false
 
-                //DocumentGalleryItem automatically recognizes the rootType of the file
-                DocumentGalleryItem {
-                    id: info
-                    item: galleryModel.get(index).itemId
-                    autoUpdate: true
-                    properties: ["width", "height", "url"]
-                }
-
-                transformOrigin: Item.TopLeft
-                asynchronous: true
-                source: isVideo ? "qrc:/images/DefaultVideoThumbnail.jpg" : galleryModel.get(index).url
-                sourceSize.width: 1200
-
-                //Disable ListView scrolling if you're zooming
-                onScaleChanged: {
-                    if (scale != 1 && imgController.flickAreaEnabled == true) imgController.flickAreaEnabled = false
-                    else if (scale == 1 && imgController.flickAreaEnabled == false) imgController.flickAreaEnabled = true
-                }
-
-                MouseArea {
-                    anchors.fill: parent
-
-                    onPressed: {
-                        //setting mouse.accepted to false means we'll only receive the onPressed of this event,
-                        //the rest will be propagated to the area underneath
-                        //if img.scale == 1 send events underneath, otherwise emit the signal (to make it
-                        //propagate beyond the Flickable parent)
-                        if (img.scale == 1) mouse.accepted = false
-
-                        if (!isVideo) {
-                            if (imgController.doubleClickTimer.running) pinchingController.resetZoom()
-                            else imgController.doubleClickTimer.start()
-                        }
+                    if (!isVideo) {
+                        if (imgController.doubleClickTimer.running) pinchingController.resetZoom()
+                        else imgController.doubleClickTimer.start()
                     }
                 }
             }
