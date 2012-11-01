@@ -37,7 +37,6 @@ Page {
     id: imageController
     anchors.fill: parent
 
-    clip: true
     tools: imgTools
 
     property variant galleryModel
@@ -223,11 +222,11 @@ Page {
 
             if (middle.x >= swipeThreshold) {
                 //move it left
-                flickToX = leftMostOptimalX + imgContainerWidth
+                flickToX = leftMostOptimalX + parent.width
             }
             else if (middle.x <= -swipeThreshold) {
                 //move it right
-                flickToX = leftMostOptimalX -imgContainerWidth
+                flickToX = leftMostOptimalX -parent.width
             }
             else {
                 //bring it back
@@ -246,6 +245,9 @@ Page {
         isVideo: galleryModel.isVideo(index)
         imageSource: galleryModel.get(index).url
         videoSource: isVideo ? galleryModel.get(index).url : ""
+        //this condition makes it possible to avoid using clip:true inside the ImageContainer to avoid seeing the other
+        //imagecontainer during the pop() animation of the page
+        visible: (middle == one || moving)
     }
 
     ImageContainer {
@@ -255,6 +257,7 @@ Page {
         isVideo: galleryModel.isVideo(index)
         imageSource: galleryModel.get(index).url
         videoSource: isVideo ? galleryModel.get(index).url : ""
+        visible: (middle == two || moving)
     }
 
     //this is the item which is in the middle by default
@@ -265,6 +268,7 @@ Page {
         isVideo: galleryModel.isVideo(index)
         imageSource: galleryModel.get(index).url
         videoSource: isVideo ? galleryModel.get(index).url : ""
+        visible: (middle == three || moving)
     }
 
     ImageContainer {
@@ -274,6 +278,7 @@ Page {
         isVideo: galleryModel.isVideo(index)
         imageSource: galleryModel.get(index).url
         videoSource: isVideo ? galleryModel.get(index).url : ""
+        visible: (middle == four || moving)
     }
 
     ImageContainer {
@@ -283,6 +288,7 @@ Page {
         isVideo: galleryModel.isVideo(index)
         imageSource: galleryModel.get(index).url
         videoSource: isVideo ? galleryModel.get(index).url : ""
+        visible: (middle == five || moving)
     }
 
     Menu {

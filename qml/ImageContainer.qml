@@ -37,15 +37,13 @@ Item {
     id: imgContainer
     property int index: -1
     property variant pinchingController
-
     property variant pageStack
     property string imageSource: ""
     property string videoSource: ""
     property bool isVideo: false
     property alias flickableArea: flickImg
-    //used inside ImagePage's imgFlickable to get the bounding rectangle of the image
-    property alias image: img
     property int doubleClickInterval: 350
+    property alias image: img
     property int videoThumbnailSize: 480
 
     width: parent.width
@@ -66,6 +64,10 @@ Item {
 
     Flickable {
         id: flickImg
+
+        //we need this so that when the image IS zoomed-in and we pop the page we don't see
+        //the part of the image which is out of the Page
+        clip: true
 
         interactive: img.scale > 1
 
