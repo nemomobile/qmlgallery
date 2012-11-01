@@ -46,8 +46,18 @@ Item {
     property alias image: img
     property int videoThumbnailSize: 480
 
-    width: parent.width
-    height: parent.height
+    //this is to trick the statusBar, so that when it shows the imageContainer isn't moved downwards
+    y: -(height - parent.height - appWindow.pageStack.toolBar.height)
+
+    //this long ternary conditional expression is to make so that the size is not changed before the screen rotates.
+    //i.e. if you just use screen.platformHeight/Width the container will resize BEFORE the orientation change
+    //animation is started, thus causing an unexpected behaviour
+    width: (parent.width > parent.height) ?
+               ((screen.platformWidth > screen.platformHeight) ? screen.platformWidth : screen.platformHeight) :
+               ((screen.platformWidth > screen.platformHeight) ? screen.platformHeight : screen.platformWidth)
+    height: (parent.width > parent.height) ?
+                ((screen.platformWidth > screen.platformHeight) ? screen.platformHeight : screen.platformWidth) :
+                ((screen.platformWidth > screen.platformHeight) ? screen.platformWidth : screen.platformHeight)
 
     signal clickedWhileZoomed()
 
