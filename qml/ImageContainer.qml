@@ -43,12 +43,29 @@ Item {
     property alias flickableArea: flickImg
     //used inside ImagePage's imgFlickable to get the bounding rectangle of the image
     property alias image: img
+    property int doubleClickInterval: 350
+    property int videoThumbnailSize: 480
 
     width: imgController.imgContainerWidth
     height: imgController.imgContainerHeight
 
+    signal clickedWhileZoomed()
+
+    function showVideoPlayer() {
+        pageStack.push(Qt.resolvedUrl("VideoPlayer.qml"),
+                       {videoSource: imgContainer.videoSource},
+                       true)
+    }
+
+    Timer {
+        id: doubleClickTimer
+        interval: doubleClickInterval
+    }
+
     Flickable {
         id: flickImg
+
+        interactive: img.scale > 1
 
         anchors.centerIn: parent
         width: Math.min(img.width*img.scale, imgContainer.width)
@@ -56,19 +73,18 @@ Item {
 
         transformOrigin: Item.TopLeft
 
-        interactive: img.scale > 1
         contentWidth: img.width * img.scale
         contentHeight: img.height * img.scale
 
         onContentWidthChanged: {
             //this check is because the first time this slot is called, pinchingController isn't set yet
-            if (pinchingController) {
+            if (pinchingController && pinchingController.pinch.active) {
                 pinchingController.updateContentX()
                 pinchingController.updateContentY()
             }
         }
         onContentHeightChanged: {
-            if (pinchingController) {
+            if (pinchingController && pinchingController.pinch.active) {
                 pinchingController.updateContentX()
                 pinchingController.updateContentY()
             }
@@ -97,12 +113,6 @@ Item {
             source: isVideo ? "qrc:/images/DefaultVideoThumbnail.jpg" : galleryModel.get(index).url
             sourceSize.width: 1200
 
-            //Disable ListView scrolling if you're zooming
-            onScaleChanged: {
-                if (scale != 1 && imgController.flickAreaEnabled == true) imgController.flickAreaEnabled = false
-                else if (scale == 1 && imgController.flickAreaEnabled == false) imgController.flickAreaEnabled = true
-            }
-
             MouseArea {
                 anchors.fill: parent
 
@@ -114,9 +124,16 @@ Item {
                     if (img.scale == 1) mouse.accepted = false
 
                     if (!isVideo) {
-                        if (imgController.doubleClickTimer.running) pinchingController.resetZoom()
-                        else imgController.doubleClickTimer.start()
+                        if (doubleClickTimer.running) {
+                            if (img.scale != 1) {
+                                pinchingController.resetZoom()
+                            }
+                            //TODO: IMPLEMENT ZOOM-IN VIA DOUBLECLICK IN THE ELSE BRANCH
+                            //something like pinchingController.zoomIn()
+                        }
+                        else doubleClickTimer.start()
                     }
+                    else showVideoPlayer()
                 }
             }
         }

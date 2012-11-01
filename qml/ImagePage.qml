@@ -53,6 +53,10 @@ Page {
     property variant middle: three
     property variant rightMiddle: four
     property variant rightMost: five
+    //we set visibleIndex to -1 so that also the first time we open the gallery it will call onVisibleIndexChanged...
+    //if we don't set it explicitly to a negative number, it will default to 0, hence not calling onVisibleChanged
+    //when we try to show the element at index 0
+    property int visibleIndex: -1
 
     //this is the index which has to be passed as a parameter when creating this page
     //it will only be used for initialization
@@ -73,15 +77,10 @@ Page {
         rightMost.index = modulus(visibleIndex + 2, galleryModel.count);
     }
 
-    property int visibleIndex
     property real swipeThreshold: 40
     property real leftMostOptimalX: -width*2
     //number of pixel you have to move before the Pinch Area is disabled
     property real pinchThreshold: 3
-    property alias flickAreaEnabled: imgFlickable.enabled
-    property variant doubleClickTimer: timer
-    property int doubleClickInterval: 350
-    property int videoThumbnailSize: 480
     //This property forces the middle item to be visible on screen by keeping the leftMost item at x = leftMostOptimalX
     //You have to set it to FALSE when you want to want to modify leftMost's x property, and set it back to true
     //to be sure that the middle item will be the one centered on screen.
@@ -93,21 +92,9 @@ Page {
             pinchImg.resetZoom()
     }
 
-    function showVideoPlayer() {
-        appWindow.pageStack.push(Qt.resolvedUrl("VideoPlayer.qml"),
-                                 {videoSource: galleryModel.get(middle.index).url},
-                                 true)
-    }
-
     function modulus(a, b) {
         if (a < 0) return (a+b) % b
         else return a % b
-    }
-
-    function isInside(x, y, rect) {
-        var rectAbsolute = rect.mapToItem(imageController, rect.x, rect.y)
-        return ((x > rectAbsolute.x) && (x < rectAbsolute.x + rect.width) &&
-                (y > rectAbsolute.y) && (y < rectAbsolute.y + rect.height))
     }
 
     function swapLeftMost() {
@@ -185,31 +172,26 @@ Page {
         targetContainer: middle
     }
 
-
-    Timer {
-        id: timer
-        interval: doubleClickInterval
-    }
-
     MouseArea {
-        id: imgFlickable
+        id: listFlickable
         anchors.fill: parent
 
+        property int doubleClickInterval: appWindow.doubleClickInterval
         property bool pressedForClick: false
 
-        //HACK: this mousarea is disabled when the image is zoomed, and the mousearea inside the imageContainer's img is disabled when zoom factor is 1,
-        //so we have to get the doubleClick event here when the zoom factor is 1, and inside imageContainer's img when the image is zoomed.
-        //This is due to the high number of mouse areas (pincharea, flickable, multiple mouseareas) available in the same view
-        //Adding another MouseArea to handle this only made things worse
-        //comment added by faenil
-        onClicked: {
-            if (!imageController.moving && isInside(mouse.x, mouse.y, middle.image)) {
-                if (!middle.isVideo) {
-                    if (doubleClickTimer.running) {}  //TODO: IMPLEMENT ZOOM-IN VIA DOUBLECLICK INSIDE THE CURLY BRACKETS
-                    else doubleClickTimer.start()
-                }
-                else showVideoPlayer()
+        function handleClick() {
+            if (toolbarTimer.running) {
+                toolbarTimer.stop()
+            } else {
+                toolbarTimer.start()
             }
+        }
+
+        //we use this to be able to not call singleclick handlers when the user is actually doubleclicking
+        Timer {
+            id: toolbarTimer
+            interval: appWindow.doubleClickInterval
+            onTriggered: appWindow.fullscreen = !appWindow.fullscreen
         }
 
         onPressed: {
@@ -228,7 +210,7 @@ Page {
                 pressedForClick = false
             }
 
-            //Only move the image if we're sure the user isn't trying to pinch
+            //moving == true means the user isn't trying to pinch
             if (moving) {
                 leftMost.x = leftMost.x - (pressX - mouseX)
                 pressX = mouseX
@@ -236,6 +218,11 @@ Page {
         }
 
         onReleased: {
+            if (pressedForClick) {
+                handleClick()
+                pressedForClick = false
+            }
+
             if (middle.x >= swipeThreshold) {
                 //move it left
                 flickToX = leftMostOptimalX + imgContainerWidth
@@ -247,11 +234,6 @@ Page {
             else {
                 //bring it back
                 flickToX = leftMostOptimalX
-            }
-
-            if (pressedForClick) {
-                appWindow.fullscreen = !appWindow.fullscreen
-                pressedForClick = false
             }
 
             flickFromX = leftMost.x

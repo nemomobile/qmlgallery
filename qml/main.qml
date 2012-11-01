@@ -35,8 +35,10 @@ import com.nokia.meego 1.0
 PageStackWindow {
     id: appWindow
 
-    initialPage: mainPage
     property bool fullscreen: false
+    property int doubleClickInterval: 350
+
+    initialPage: mainPage
     showStatusBar: !fullscreen
     showToolBar: !fullscreen
 
