@@ -39,7 +39,10 @@ Item {
     property variant pinchingController
 
     property variant imgController: imageController
-    property bool isVideo: galleryModel.isVideo(index)
+    property variant pageStack
+    property string imageSource: ""
+    property string videoSource: ""
+    property bool isVideo: false
     property alias flickableArea: flickImg
     //used inside ImagePage's imgFlickable to get the bounding rectangle of the image
     property alias image: img
@@ -95,22 +98,14 @@ Item {
             width: (fitsVertically) ? (imgController.height * imgRatio) : imgController.width
             height: (fitsVertically) ? (imgController.height) : (imgController.width / imgRatio)
 
-            property int imgWidth: isVideo ? videoThumbnailSize : (info.available ? info.metaData.width : -1)
-            property int imgHeight: isVideo ? videoThumbnailSize : (info.available ? info.metaData.height : -1)
+            property int imgWidth: isVideo ? videoThumbnailSize : implicitWidth
+            property int imgHeight: isVideo ? videoThumbnailSize : implicitHeight
             property real imgRatio: imgWidth / imgHeight
             property bool fitsVertically: imgRatio < (imgContainer.width / imgContainer.height)
 
-            //DocumentGalleryItem automatically recognizes the rootType of the file
-            DocumentGalleryItem {
-                id: info
-                item: galleryModel.get(index).itemId
-                autoUpdate: true
-                properties: ["width", "height", "url"]
-            }
-
             transformOrigin: Item.TopLeft
             asynchronous: true
-            source: isVideo ? "qrc:/images/DefaultVideoThumbnail.jpg" : galleryModel.get(index).url
+            source: isVideo ? "qrc:/images/DefaultVideoThumbnail.jpg" : imageSource
             sourceSize.width: 1200
 
             MouseArea {

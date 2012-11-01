@@ -244,27 +244,47 @@ Page {
     ImageContainer {
         id: one; x: leftMostOptimalX
         pinchingController: pinchImg
+        pageStack: appWindow.pageStack
+        isVideo: galleryModel.isVideo(index)
+        imageSource: galleryModel.get(index).url
+        videoSource: isVideo ? galleryModel.get(index).url : ""
     }
 
     ImageContainer {
         id: two; anchors.left: one.right
         pinchingController: pinchImg
+        pageStack: appWindow.pageStack
+        isVideo: galleryModel.isVideo(index)
+        imageSource: galleryModel.get(index).url
+        videoSource: isVideo ? galleryModel.get(index).url : ""
     }
 
     //this is the item which is in the middle by default
     ImageContainer {
         id: three; anchors.left: two.right
         pinchingController: pinchImg
+        pageStack: appWindow.pageStack
+        isVideo: galleryModel.isVideo(index)
+        imageSource: galleryModel.get(index).url
+        videoSource: isVideo ? galleryModel.get(index).url : ""
     }
 
     ImageContainer {
         id: four; anchors.left: three.right
         pinchingController: pinchImg
+        pageStack: appWindow.pageStack
+        isVideo: galleryModel.isVideo(index)
+        imageSource: galleryModel.get(index).url
+        videoSource: isVideo ? galleryModel.get(index).url : ""
     }
 
     ImageContainer {
         id: five; anchors.left: four.right
         pinchingController: pinchImg
+        pageStack: appWindow.pageStack
+        isVideo: galleryModel.isVideo(index)
+        imageSource: galleryModel.get(index).url
+        videoSource: isVideo ? galleryModel.get(index).url : ""
     }
 
     Menu {
