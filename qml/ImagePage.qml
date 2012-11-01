@@ -169,6 +169,11 @@ Page {
         targetContainer: middle
     }
 
+    Connections {
+        target: middle
+        onClickedWhileZoomed: listFlickable.handleClick()
+    }
+
     MouseArea {
         id: listFlickable
         anchors.fill: parent

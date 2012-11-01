@@ -112,6 +112,15 @@ Item {
             MouseArea {
                 anchors.fill: parent
 
+                //this is only called when img.scale != 1
+                //----> WARNING!!!: this causes a problem! double-press will call the zoomIn/Out function, while only
+                //doubleCLICK will stop the toolbarTimer in ImagePage! So if you double-press (and keep it pressed)
+                //both the zoomIn/Out function will be called and the toolBar in ImagePage will show/hide!!
+                //TODO: look for a way to fix this
+                onClicked: {
+                    imgContainer.clickedWhileZoomed()
+                }
+
                 onPressed: {
                     //setting mouse.accepted to false means we'll only receive the onPressed of this event,
                     //the rest will be propagated to the area underneath
