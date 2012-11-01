@@ -49,4 +49,20 @@ PageStackWindow {
         theme.inverted = true
     }
 
+    function displayFile(filename) {
+        console.log("displayFile:" + filename)
+        appWindow.pageStack.pop(null) // Unwind to top of the stack, wherever we are
+
+        switch (gallery.isVideo(filename)) {
+        case 0:
+            appWindow.pageStack.push(Qt.resolvedUrl("SingleImagePage.qml"), { imageSource: filename })
+            break
+        case 1:
+            appWindow.pageStack.push(Qt.resolvedUrl("VideoPlayer.qml"), { videoSource: filename })
+            break
+        case -1:
+            console.log("displayFile: ERROR WHILE LOADING THE FILE, FILE NOT FOUND")
+
+        }
+    }
 }
