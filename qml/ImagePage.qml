@@ -50,28 +50,25 @@ Page {
     property variant middle: three
     property variant rightMiddle: four
     property variant rightMost: five
-    //we set visibleIndex to -1 so that also the first time we open the gallery it will call onVisibleIndexChanged...
-    //if we don't set it explicitly to a negative number, it will default to 0, hence not calling onVisibleChanged
-    //when we try to show the element at index 0
-    property int visibleIndex: -1
 
     //this is the index which has to be passed as a parameter when creating this page
     //it will only be used for initialization
     property int parameterIndex
 
-    //this is to make so that when visibleIndex is changed the image containers have already been
-    //initialized
-    Component.onCompleted: visibleIndex = parameterIndex
+    property int visibleIndex
+
+    Component.onCompleted: {
+        //this is to make so that when visibleIndex is changed the image containers have already been
+        //initialized
+        visibleIndex = parameterIndex
+        updateImagesIndexes()
+    }
 
     //this will make so that every time visibleIndex is changed, the image containers will all load
     //the correct images.
     //visibleIndex is the reliable source to know what index is currently being displayed on screen
     onVisibleIndexChanged: {
-        leftMost.index = modulus(visibleIndex - 2, galleryModel.count);
-        leftMiddle.index = modulus(visibleIndex - 1, galleryModel.count);
-        middle.index = modulus(visibleIndex, galleryModel.count);
-        rightMiddle.index = modulus(visibleIndex + 1, galleryModel.count);
-        rightMost.index = modulus(visibleIndex + 2, galleryModel.count);
+        updateImagesIndexes()
     }
 
     property real swipeThreshold: 40
@@ -87,6 +84,14 @@ Page {
     onWidthChanged: {
         if (!middle.isVideo)
             pinchImg.resetZoom()
+    }
+
+    function updateImagesIndexes() {
+        leftMost.index = modulus(visibleIndex - 2, galleryModel.count);
+        leftMiddle.index = modulus(visibleIndex - 1, galleryModel.count);
+        middle.index = modulus(visibleIndex, galleryModel.count);
+        rightMiddle.index = modulus(visibleIndex + 1, galleryModel.count);
+        rightMost.index = modulus(visibleIndex + 2, galleryModel.count);
     }
 
     function modulus(a, b) {
@@ -158,7 +163,7 @@ Page {
         when: keepMiddleItemAligned
     }
 
-    ZoomController{
+    ZoomController {
         id: pinchImg
 
         //Disable the pincharea if the listview is scrolling, to avoid problems
@@ -178,7 +183,6 @@ Page {
         id: listFlickable
         anchors.fill: parent
 
-        property int doubleClickInterval: appWindow.doubleClickInterval
         property bool pressedForClick: false
 
         function handleClick() {
@@ -192,7 +196,7 @@ Page {
         //we use this to be able to not call singleclick handlers when the user is actually doubleclicking
         Timer {
             id: toolbarTimer
-            interval: appWindow.doubleClickInterval
+            interval: 350
             onTriggered: appWindow.fullscreen = !appWindow.fullscreen
         }
 
@@ -250,8 +254,6 @@ Page {
         isVideo: galleryModel.isVideo(index)
         imageSource: galleryModel.get(index).url
         videoSource: isVideo ? galleryModel.get(index).url : ""
-        //this condition makes it possible to avoid using clip:true inside the ImageContainer to avoid seeing the other
-        //imagecontainer during the pop() animation of the page
         visible: (middle == one || moving)
     }
 
@@ -327,4 +329,26 @@ Page {
             onClicked: (pageMenu.status === DialogStatus.Closed) ? pageMenu.open() : pageMenu.close()
         }
     }
+
+    states: State {
+        name: "active"
+        when: status === PageStatus.Active || status === PageStatus.Activating
+
+        PropertyChanges {
+            target: appWindow.pageStack.toolBar
+            opacity: 0.8
+        }
+    }
+
+    transitions: Transition {
+        from: "active"
+        reversible: true
+
+        NumberAnimation {
+            target: appWindow.pageStack.toolBar
+            property: "opacity"
+            duration: 250
+        }
+    }
+
 }

@@ -36,7 +36,6 @@ PageStackWindow {
     id: appWindow
 
     property bool fullscreen: false
-    property int doubleClickInterval: 350
 
     initialPage: mainPage
     showStatusBar: !fullscreen
@@ -49,4 +48,5 @@ PageStackWindow {
     Component.onCompleted: {
         theme.inverted = true
     }
+
 }

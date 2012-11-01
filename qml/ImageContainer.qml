@@ -75,10 +75,7 @@ Item {
     Flickable {
         id: flickImg
 
-        //we need this so that when the image IS zoomed-in and we pop the page we don't see
-        //the part of the image which is out of the Page
         clip: true
-
         interactive: img.scale > 1
 
         anchors.centerIn: parent
@@ -109,9 +106,8 @@ Item {
             width: (fitsVertically) ? (imgContainer.height * imgRatio) : imgContainer.width
             height: (fitsVertically) ? (imgContainer.height) : (imgContainer.width / imgRatio)
 
-            property int imgWidth: isVideo ? videoThumbnailSize : implicitWidth
-            property int imgHeight: isVideo ? videoThumbnailSize : implicitHeight
-            property real imgRatio: imgWidth / imgHeight
+            //(isVideo --> imgRatio = 1.0) because we're using a square dummy thumbnail
+            property real imgRatio: isVideo ? 1.0 : implicitWidth / implicitHeight
             property bool fitsVertically: imgRatio < (imgContainer.width / imgContainer.height)
 
             transformOrigin: Item.TopLeft
