@@ -90,7 +90,7 @@ Page {
 
     onWidthChanged: {
         if (!middle.isVideo)
-            middle.resetZoom()
+            pinchImg.resetZoom()
     }
 
     function showVideoPlayer() {
@@ -174,16 +174,17 @@ Page {
         when: keepMiddleItemAligned
     }
 
-    ImageContainer { id: one; x: leftMostOptimalX }
+    ZoomController{
+        id: pinchImg
 
-    ImageContainer { id: two; anchors.left: one.right }
+        //Disable the pincharea if the listview is scrolling, to avoid problems
+        enabled: (!imageController.moving && !middle.isVideo)
 
-    //this is the item which is in the middle by default
-    ImageContainer { id: three; anchors.left: two.right }
+        pinchTarget: middle.image
+        connectedFlickable: middle.flickableArea
+        targetContainer: middle
+    }
 
-    ImageContainer { id: four; anchors.left: three.right }
-
-    ImageContainer { id: five; anchors.left: four.right }
 
     Timer {
         id: timer
@@ -256,6 +257,32 @@ Page {
             flickFromX = leftMost.x
             flickTo.start()
         }
+    }
+
+    ImageContainer {
+        id: one; x: leftMostOptimalX
+        pinchingController: pinchImg
+    }
+
+    ImageContainer {
+        id: two; anchors.left: one.right
+        pinchingController: pinchImg
+    }
+
+    //this is the item which is in the middle by default
+    ImageContainer {
+        id: three; anchors.left: two.right
+        pinchingController: pinchImg
+    }
+
+    ImageContainer {
+        id: four; anchors.left: three.right
+        pinchingController: pinchImg
+    }
+
+    ImageContainer {
+        id: five; anchors.left: four.right
+        pinchingController: pinchImg
     }
 
     Menu {
