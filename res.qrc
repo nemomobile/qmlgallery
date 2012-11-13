@@ -12,5 +12,6 @@
         <file>qml/SortDialog.qml</file>
         <file>images/down_arrow.png</file>
         <file>images/up_arrow.png</file>
+        <file>qml/ZoomController.qml</file>
     </qresource>
 </RCC>

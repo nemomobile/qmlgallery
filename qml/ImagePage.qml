@@ -37,11 +37,8 @@ Page {
     id: imageController
     anchors.fill: parent
 
-    clip: true
     tools: imgTools
 
-    property int imgContainerWidth: width
-    property int imgContainerHeight: height
     property variant galleryModel
     property real firstPressX
     property real pressX
@@ -58,30 +55,26 @@ Page {
     //it will only be used for initialization
     property int parameterIndex
 
-    //this is to make so that when visibleIndex is changed the image containers have already been
-    //initialized
-    Component.onCompleted: visibleIndex = parameterIndex
+    property int visibleIndex
+
+    Component.onCompleted: {
+        //this is to make so that when visibleIndex is changed the image containers have already been
+        //initialized
+        visibleIndex = parameterIndex
+        updateImagesIndexes()
+    }
 
     //this will make so that every time visibleIndex is changed, the image containers will all load
     //the correct images.
     //visibleIndex is the reliable source to know what index is currently being displayed on screen
     onVisibleIndexChanged: {
-        leftMost.index = modulus(visibleIndex - 2, galleryModel.count);
-        leftMiddle.index = modulus(visibleIndex - 1, galleryModel.count);
-        middle.index = modulus(visibleIndex, galleryModel.count);
-        rightMiddle.index = modulus(visibleIndex + 1, galleryModel.count);
-        rightMost.index = modulus(visibleIndex + 2, galleryModel.count);
+        updateImagesIndexes()
     }
 
-    property int visibleIndex
     property real swipeThreshold: 40
     property real leftMostOptimalX: -width*2
     //number of pixel you have to move before the Pinch Area is disabled
     property real pinchThreshold: 3
-    property alias flickAreaEnabled: imgFlickable.enabled
-    property variant doubleClickTimer: timer
-    property int doubleClickInterval: 350
-    property int videoThumbnailSize: 480
     //This property forces the middle item to be visible on screen by keeping the leftMost item at x = leftMostOptimalX
     //You have to set it to FALSE when you want to want to modify leftMost's x property, and set it back to true
     //to be sure that the middle item will be the one centered on screen.
@@ -90,24 +83,20 @@ Page {
 
     onWidthChanged: {
         if (!middle.isVideo)
-            middle.resetZoom()
+            pinchImg.resetZoom()
     }
 
-    function showVideoPlayer() {
-        appWindow.pageStack.push(Qt.resolvedUrl("VideoPlayer.qml"),
-                                 {videoSource: galleryModel.get(middle.index).url},
-                                 true)
+    function updateImagesIndexes() {
+        leftMost.index = modulus(visibleIndex - 2, galleryModel.count);
+        leftMiddle.index = modulus(visibleIndex - 1, galleryModel.count);
+        middle.index = modulus(visibleIndex, galleryModel.count);
+        rightMiddle.index = modulus(visibleIndex + 1, galleryModel.count);
+        rightMost.index = modulus(visibleIndex + 2, galleryModel.count);
     }
 
     function modulus(a, b) {
         if (a < 0) return (a+b) % b
         else return a % b
-    }
-
-    function isInside(x, y, rect) {
-        var rectAbsolute = rect.mapToItem(imageController, rect.x, rect.y)
-        return ((x > rectAbsolute.x) && (x < rectAbsolute.x + rect.width) &&
-                (y > rectAbsolute.y) && (y < rectAbsolute.y + rect.height))
     }
 
     function swapLeftMost() {
@@ -174,41 +163,41 @@ Page {
         when: keepMiddleItemAligned
     }
 
-    ImageContainer { id: one; x: leftMostOptimalX }
+    ZoomController {
+        id: pinchImg
 
-    ImageContainer { id: two; anchors.left: one.right }
+        //Disable the pincharea if the listview is scrolling, to avoid problems
+        enabled: (!imageController.moving && !middle.isVideo)
 
-    //this is the item which is in the middle by default
-    ImageContainer { id: three; anchors.left: two.right }
+        pinchTarget: middle.image
+        connectedFlickable: middle.flickableArea
+        targetContainer: middle
+    }
 
-    ImageContainer { id: four; anchors.left: three.right }
-
-    ImageContainer { id: five; anchors.left: four.right }
-
-    Timer {
-        id: timer
-        interval: doubleClickInterval
+    Connections {
+        target: middle
+        onClickedWhileZoomed: listFlickable.handleClick()
     }
 
     MouseArea {
-        id: imgFlickable
+        id: listFlickable
         anchors.fill: parent
 
         property bool pressedForClick: false
 
-        //HACK: this mousarea is disabled when the image is zoomed, and the mousearea inside the imageContainer's img is disabled when zoom factor is 1,
-        //so we have to get the doubleClick event here when the zoom factor is 1, and inside imageContainer's img when the image is zoomed.
-        //This is due to the high number of mouse areas (pincharea, flickable, multiple mouseareas) available in the same view
-        //Adding another MouseArea to handle this only made things worse
-        //comment added by faenil
-        onClicked: {
-            if (!imageController.moving && isInside(mouse.x, mouse.y, middle.image)) {
-                if (!middle.isVideo) {
-                    if (doubleClickTimer.running) {}  //TODO: IMPLEMENT ZOOM-IN VIA DOUBLECLICK INSIDE THE CURLY BRACKETS
-                    else doubleClickTimer.start()
-                }
-                else showVideoPlayer()
+        function handleClick() {
+            if (toolbarTimer.running) {
+                toolbarTimer.stop()
+            } else {
+                toolbarTimer.start()
             }
+        }
+
+        //we use this to be able to not call singleclick handlers when the user is actually doubleclicking
+        Timer {
+            id: toolbarTimer
+            interval: 350
+            onTriggered: appWindow.fullscreen = !appWindow.fullscreen
         }
 
         onPressed: {
@@ -227,7 +216,7 @@ Page {
                 pressedForClick = false
             }
 
-            //Only move the image if we're sure the user isn't trying to pinch
+            //moving == true means the user isn't trying to pinch
             if (moving) {
                 leftMost.x = leftMost.x - (pressX - mouseX)
                 pressX = mouseX
@@ -235,27 +224,78 @@ Page {
         }
 
         onReleased: {
+            if (pressedForClick) {
+                handleClick()
+                pressedForClick = false
+            }
+
             if (middle.x >= swipeThreshold) {
                 //move it left
-                flickToX = leftMostOptimalX + imgContainerWidth
+                flickToX = leftMostOptimalX + parent.width
             }
             else if (middle.x <= -swipeThreshold) {
                 //move it right
-                flickToX = leftMostOptimalX -imgContainerWidth
+                flickToX = leftMostOptimalX -parent.width
             }
             else {
                 //bring it back
                 flickToX = leftMostOptimalX
             }
 
-            if (pressedForClick) {
-                appWindow.fullscreen = !appWindow.fullscreen
-                pressedForClick = false
-            }
-
             flickFromX = leftMost.x
             flickTo.start()
         }
+    }
+
+    ImageContainer {
+        id: one; x: leftMostOptimalX
+        pinchingController: pinchImg
+        pageStack: appWindow.pageStack
+        isVideo: galleryModel.isVideo(index)
+        imageSource: galleryModel.get(index).url
+        videoSource: isVideo ? galleryModel.get(index).url : ""
+        visible: (middle == one || moving)
+    }
+
+    ImageContainer {
+        id: two; anchors.left: one.right
+        pinchingController: pinchImg
+        pageStack: appWindow.pageStack
+        isVideo: galleryModel.isVideo(index)
+        imageSource: galleryModel.get(index).url
+        videoSource: isVideo ? galleryModel.get(index).url : ""
+        visible: (middle == two || moving)
+    }
+
+    //this is the item which is in the middle by default
+    ImageContainer {
+        id: three; anchors.left: two.right
+        pinchingController: pinchImg
+        pageStack: appWindow.pageStack
+        isVideo: galleryModel.isVideo(index)
+        imageSource: galleryModel.get(index).url
+        videoSource: isVideo ? galleryModel.get(index).url : ""
+        visible: (middle == three || moving)
+    }
+
+    ImageContainer {
+        id: four; anchors.left: three.right
+        pinchingController: pinchImg
+        pageStack: appWindow.pageStack
+        isVideo: galleryModel.isVideo(index)
+        imageSource: galleryModel.get(index).url
+        videoSource: isVideo ? galleryModel.get(index).url : ""
+        visible: (middle == four || moving)
+    }
+
+    ImageContainer {
+        id: five; anchors.left: four.right
+        pinchingController: pinchImg
+        pageStack: appWindow.pageStack
+        isVideo: galleryModel.isVideo(index)
+        imageSource: galleryModel.get(index).url
+        videoSource: isVideo ? galleryModel.get(index).url : ""
+        visible: (middle == five || moving)
     }
 
     Menu {
@@ -289,4 +329,26 @@ Page {
             onClicked: (pageMenu.status === DialogStatus.Closed) ? pageMenu.open() : pageMenu.close()
         }
     }
+
+    states: State {
+        name: "active"
+        when: status === PageStatus.Active || status === PageStatus.Activating
+
+        PropertyChanges {
+            target: appWindow.pageStack.toolBar
+            opacity: 0.8
+        }
+    }
+
+    transitions: Transition {
+        from: "active"
+        reversible: true
+
+        NumberAnimation {
+            target: appWindow.pageStack.toolBar
+            property: "opacity"
+            duration: 250
+        }
+    }
+
 }
