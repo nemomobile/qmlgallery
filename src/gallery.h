@@ -35,6 +35,7 @@
 #include <policy/resource-set.h>
 
 class QDeclarativeView;
+class QString;
 
 class Gallery : public QObject
 {
@@ -46,6 +47,7 @@ public:
 public slots:
     void acquireVideoResources();
     void releaseVideoResources();
+    int isVideo(QString fileName);
 
 private slots:
     void resourcesGranted();

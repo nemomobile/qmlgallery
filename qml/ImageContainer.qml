@@ -60,12 +60,7 @@ Item {
                 ((screen.platformWidth > screen.platformHeight) ? screen.platformWidth : screen.platformHeight)
 
     signal clickedWhileZoomed()
-
-    function showVideoPlayer() {
-        pageStack.push(Qt.resolvedUrl("VideoPlayer.qml"),
-                       {videoSource: imgContainer.videoSource},
-                       true)
-    }
+    signal pressedWhileNotZoomed()
 
     Timer {
         id: doubleClickTimer
@@ -132,7 +127,10 @@ Item {
                     //the rest will be propagated to the area underneath
                     //if img.scale == 1 send events underneath, otherwise emit the signal (to make it
                     //propagate beyond the Flickable parent)
-                    if (img.scale == 1) mouse.accepted = false
+                    if (img.scale == 1) {
+                        imgContainer.pressedWhileNotZoomed()
+                        mouse.accepted = false
+                    }
 
                     if (!isVideo) {
                         if (doubleClickTimer.running) {
@@ -144,7 +142,6 @@ Item {
                         }
                         else doubleClickTimer.start()
                     }
-                    else showVideoPlayer()
                 }
             }
         }
