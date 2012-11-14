@@ -36,10 +36,17 @@
 #include <QDir>
 #include <QGLWidget>
 #include <QDebug>
+#include <QFile>
+#include <QFileInfo>
+#include <QMetaObject>
+#include <QGraphicsObject>
+#include <QUrl>
+#include <QImageReader>
 
 Gallery::Gallery(QDeclarativeView *v, QObject *parent)
     : QObject(parent), view(v)
 {
+    QFile fileToOpen;
     bool isFullscreen = false;
     bool glwidget = true;
     foreach (QString parameter, qApp->arguments()) {
@@ -50,8 +57,11 @@ Gallery::Gallery(QDeclarativeView *v, QObject *parent)
             qDebug() << "-fullscreen   - show QML fullscreen";
             qDebug() << "-no-glwidget  - Don't use QGLWidget viewport";
             exit(0);
-        } else if (parameter == "-no-glwidget")
+        } else if (parameter == "-no-glwidget") {
             glwidget = false;
+        } else if (parameter != qApp->arguments().first() && !fileToOpen.exists()) {
+            fileToOpen.setFileName(parameter);
+        }
     }
 
     // See NEMO#415 for an explanation of why this may be necessary.
@@ -84,6 +94,18 @@ Gallery::Gallery(QDeclarativeView *v, QObject *parent)
         view->showFullScreen();
     else
         view->show();
+
+    if(!fileToOpen.fileName().isNull()) {
+        if (fileToOpen.exists()) {
+            QFileInfo fileInfo(fileToOpen);
+            QUrl fileUrl = QUrl::fromLocalFile(fileInfo.absoluteFilePath());
+            if (view->rootObject()) {
+                QMetaObject::invokeMethod(view->rootObject(), "displayFile", Q_ARG(QVariant, QVariant(fileUrl.toString())));
+            }
+        } else {
+            qDebug() << "File " << fileToOpen.fileName() << " does not exist.";
+        }
+    }
 }
 
 void Gallery::acquireVideoResources()
@@ -123,3 +145,21 @@ void Gallery::lostResources()
     qDebug() << Q_FUNC_INFO;
 }
 
+int Gallery::isVideo(QString fileUrl)
+{
+    //RETURN VALUES
+    //-1: ERROR, 0: IMAGE, 1: VIDEO
+    const QString fileName = QUrl(fileUrl).toLocalFile();
+    QFileInfo testFile(fileName);
+    if (testFile.exists())
+    {
+        QImageReader reader(fileName);
+        QByteArray format = reader.format();
+        if (format.isNull() && reader.error() == QImageReader::UnsupportedFormatError) {
+            //we assume it's a video
+            return 1;
+        }
+        else return 0;
+    }
+    return -1;
+}

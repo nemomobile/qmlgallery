@@ -51,6 +51,8 @@ Page {
     property variant rightMiddle: four
     property variant rightMost: five
 
+    property bool videoPlayerRequested: false
+
     //this is the index which has to be passed as a parameter when creating this page
     //it will only be used for initialization
     property int parameterIndex
@@ -97,6 +99,12 @@ Page {
     function modulus(a, b) {
         if (a < 0) return (a+b) % b
         else return a % b
+    }
+
+    function showVideoPlayer(fileName) {
+        pageStack.push(Qt.resolvedUrl("VideoPlayer.qml"),
+                       {videoSource: fileName},
+                       true)
     }
 
     function swapLeftMost() {
@@ -177,6 +185,7 @@ Page {
     Connections {
         target: middle
         onClickedWhileZoomed: listFlickable.handleClick()
+        onPressedWhileNotZoomed: if (middle.isVideo) videoPlayerRequested = true
     }
 
     MouseArea {
@@ -186,10 +195,17 @@ Page {
         property bool pressedForClick: false
 
         function handleClick() {
-            if (toolbarTimer.running) {
-                toolbarTimer.stop()
-            } else {
-                toolbarTimer.start()
+            if (videoPlayerRequested) {
+                videoPlayerRequested = false
+                imageController.showVideoPlayer(middle.videoSource)
+            }
+            else {
+
+                if (toolbarTimer.running) {
+                    toolbarTimer.stop()
+                } else {
+                    toolbarTimer.start()
+                }
             }
         }
 
@@ -264,7 +280,6 @@ Page {
         isVideo: galleryModel.isVideo(index)
         imageSource: galleryModel.get(index).url
         videoSource: isVideo ? galleryModel.get(index).url : ""
-        visible: (middle == two || moving)
     }
 
     //this is the item which is in the middle by default
@@ -275,7 +290,6 @@ Page {
         isVideo: galleryModel.isVideo(index)
         imageSource: galleryModel.get(index).url
         videoSource: isVideo ? galleryModel.get(index).url : ""
-        visible: (middle == three || moving)
     }
 
     ImageContainer {
@@ -285,7 +299,6 @@ Page {
         isVideo: galleryModel.isVideo(index)
         imageSource: galleryModel.get(index).url
         videoSource: isVideo ? galleryModel.get(index).url : ""
-        visible: (middle == four || moving)
     }
 
     ImageContainer {
@@ -295,7 +308,6 @@ Page {
         isVideo: galleryModel.isVideo(index)
         imageSource: galleryModel.get(index).url
         videoSource: isVideo ? galleryModel.get(index).url : ""
-        visible: (middle == five || moving)
     }
 
     Menu {
