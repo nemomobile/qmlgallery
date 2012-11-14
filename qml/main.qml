@@ -35,8 +35,9 @@ import com.nokia.meego 1.0
 PageStackWindow {
     id: appWindow
 
-    initialPage: mainPage
     property bool fullscreen: false
+
+    initialPage: mainPage
     showStatusBar: !fullscreen
     showToolBar: !fullscreen
 
@@ -47,4 +48,5 @@ PageStackWindow {
     Component.onCompleted: {
         theme.inverted = true
     }
+
 }

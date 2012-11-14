@@ -36,220 +36,115 @@ import QtMobility.gallery 1.1
 Item {
     id: imgContainer
     property int index: -1
-    property variant imgController: imageController
-    property bool isVideo: galleryModel.isVideo(index)
-
-    //used inside ImagePage's imgFlickable to get the bounding rectangle of the image
+    property variant pinchingController
+    property variant pageStack
+    property string imageSource: ""
+    property string videoSource: ""
+    property bool isVideo: false
+    property alias flickableArea: flickImg
+    property int doubleClickInterval: 350
     property alias image: img
+    property int videoThumbnailSize: 480
 
-    width: imgController.imgContainerWidth
-    height: imgController.imgContainerHeight
+    //this is to trick the statusBar, so that when it shows the imageContainer isn't moved downwards
+    y: -(height - parent.height - appWindow.pageStack.toolBar.height)
 
-    function resetZoom() {
-        //resetting all variables related to pinch-to-zoom
-        img.scale = 1
-        flickImg.contentX = flickImg.contentY = 0
-        pinchImg.lastContentX = pinchImg.lastContentY = pinchImg.deltaX = pinchImg.deltaY = 0
-        pinchImg.lastScaleX = pinchImg.lastScaleY = 1
-        pinchImg.isZoomingOut = false
+    //this long ternary conditional expression is to make so that the size is not changed before the screen rotates.
+    //i.e. if you just use screen.platformHeight/Width the container will resize BEFORE the orientation change
+    //animation is started, thus causing an unexpected behaviour
+    width: (parent.width > parent.height) ?
+               ((screen.platformWidth > screen.platformHeight) ? screen.platformWidth : screen.platformHeight) :
+               ((screen.platformWidth > screen.platformHeight) ? screen.platformHeight : screen.platformWidth)
+    height: (parent.width > parent.height) ?
+                ((screen.platformWidth > screen.platformHeight) ? screen.platformHeight : screen.platformWidth) :
+                ((screen.platformWidth > screen.platformHeight) ? screen.platformWidth : screen.platformHeight)
+
+    signal clickedWhileZoomed()
+
+    function showVideoPlayer() {
+        pageStack.push(Qt.resolvedUrl("VideoPlayer.qml"),
+                       {videoSource: imgContainer.videoSource},
+                       true)
     }
 
-    PinchArea {
-        id: pinchImg
-        anchors.fill: imgContainer
-
-        //Disable the pincharea if the listview is scrolling, to avoid problems
-        enabled: (!imgController.moving && !isVideo)
-        pinch.target: img
-        pinch.maximumScale: 5
-        pinch.dragAxis: Pinch.NoDrag
-
-        property real lastContentX: 0
-        property real lastContentY: 0
-        property real lastScaleX: 1
-        property real lastScaleY: 1
-        property real deltaX: 0
-        property real deltaY: 0
-        property bool initializedX: false
-        property bool initializedY: false
-        property bool isZoomingOut: false
-
-
-        function updateContentX() {
-
-            //Only calculate the correct ContentX if the image is wider than the screen, otherwise keep it centered (contentX = 0 in the else branch)
-            if (rect.width == imgController.width) {
-
-                //Anchors the image to the left
-                if (flickImg.contentX < 0){
-                    deltaX = 0.0
-                    lastContentX = 0.0
-                    flickImg.contentX = 0.0
-                }
-                else {
-                    //if the right end of the image is inside the screen area, lock it to the right and zoom out using right edge as an anchor
-                    if ((flickImg.contentWidth - flickImg.contentX < parent.width) && isZoomingOut) {
-
-                        //align to the right
-                        flickImg.contentX -= parent.width - (flickImg.contentWidth - flickImg.contentX)
-
-                        //Algo: set variable as if a new pinch starting from right edge were triggered
-                        lastContentX = flickImg.contentX
-                        deltaX = flickImg.contentX + parent.width
-                        lastScaleX = img.scale
-                    }
-
-                    flickImg.contentX = (lastContentX + deltaX * ((img.scale / lastScaleX) - 1.0 ))
-                }
-            }
-            else {
-                flickImg.contentX = 0
-            }
-        }
-
-        function updateContentY() {
-
-            //Only calculate the correct ContentY if the image is taller than the screen, otherwise keep it centered (contentY = 0 in the else branch)
-            if (rect.height == imgController.height) {
-
-                //Anchors the image to the top when zooming out
-                if (flickImg.contentY < 0) {
-                    deltaY = 0.0
-                    lastContentY = 0.0
-                    flickImg.contentY = 0.0
-                }
-                else {
-                    //if the bottom end of the image is inside the screen area, lock it to the bottom and zoom out using bottom edge as an anchor
-                    if ((flickImg.contentHeight - flickImg.contentY < parent.height) && isZoomingOut) {
-                        //align to the bottom
-                        flickImg.contentY -= parent.height - (flickImg.contentHeight - flickImg.contentY)
-
-                        //Algo: set variable as if a new pinch starting from bottom edge were triggered
-                        lastContentY = flickImg.contentY
-                        deltaY = flickImg.contentY + parent.height
-                        lastScaleY = img.scale
-                    }
-                    flickImg.contentY = (lastContentY + deltaY * ((img.scale / lastScaleY) - 1.0 ))
-                }
-            }
-            else {
-                flickImg.contentY = 0
-            }
-        }
-
-
-        onPinchUpdated: {
-            //Am I zooming in or out?
-            if (pinch.scale > pinch.previousScale) isZoomingOut = false
-            else isZoomingOut = true
-
-            //Get updated "zoom center point" values when the image is completely zoomed out
-            if(img.scale == 1) {
-                //This is so that everytime you zoom out, the new zoom is started with updated values
-                initializedX = false
-                initializedY = false
-            }
-
-            //i.e. everytime the image is wider than the screen, it should actually be
-            // img.width == imgController.width, but this condition is rarely met because of numeric error
-            if (rect.width == imgController.width) {
-                if (!initializedX ) {
-                    //If it has not already been set by the "if (height == parent.imgController.height)" branch, set the scale here
-                    lastScaleX = img.scale
-
-                    lastContentX = flickImg.contentX
-                    deltaX = flickImg.contentX + pinch.center.x
-                    initializedX = true;
-                }
-
-            }
-
-            if (rect.height == imgController.height) {
-                if (!initializedY) {
-                    //If it has not already been set by the "if (width == imgController.width)", set the scale here
-                    lastScaleY = img.scale
-
-                    lastContentY = flickImg.contentY
-                    deltaY = flickImg.contentY + pinch.center.y
-                    initializedY = true;
-                }
-            }
-            // updateContentX and updateContentY are called after the scale on the target item updates bindings
-        }
-
-        onPinchFinished: {
-            lastContentX = flickImg.contentX
-            lastContentY = flickImg.contentY
-
-            initializedX = false
-            initializedY = false
-        }
-
+    Timer {
+        id: doubleClickTimer
+        interval: doubleClickInterval
     }
 
-    Item {
-        id: rect
+    Flickable {
+        id: flickImg
+
+        clip: true
+        interactive: img.scale > 1
+
         anchors.centerIn: parent
+        width: Math.min(img.width*img.scale, imgContainer.width)
+        height: Math.min(img.height*img.scale, imgContainer.height)
 
-        width: Math.min(img.width*img.scale, parent.width)
-        height: Math.min(img.height*img.scale, parent.height)
+        transformOrigin: Item.TopLeft
 
-        Flickable {
-            id: flickImg
+        contentWidth: img.width * img.scale
+        contentHeight: img.height * img.scale
 
-            anchors.fill: rect
+        onContentWidthChanged: {
+            //this check is because the first time this slot is called, pinchingController isn't set yet
+            if (pinchingController && pinchingController.pinch.active) {
+                pinchingController.updateContentX()
+                pinchingController.updateContentY()
+            }
+        }
+        onContentHeightChanged: {
+            if (pinchingController && pinchingController.pinch.active) {
+                pinchingController.updateContentX()
+                pinchingController.updateContentY()
+            }
+        }
+
+        Image {
+            id: img
+            width: (fitsVertically) ? (imgContainer.height * imgRatio) : imgContainer.width
+            height: (fitsVertically) ? (imgContainer.height) : (imgContainer.width / imgRatio)
+
+            //(isVideo --> imgRatio = 1.0) because we're using a square dummy thumbnail
+            property real imgRatio: isVideo ? 1.0 : implicitWidth / implicitHeight
+            property bool fitsVertically: imgRatio < (imgContainer.width / imgContainer.height)
+
             transformOrigin: Item.TopLeft
+            asynchronous: true
+            source: isVideo ? "qrc:/images/DefaultVideoThumbnail.jpg" : imageSource
+            sourceSize.width: 1200
 
-            contentWidth: img.width * img.scale
-            contentHeight: img.height * img.scale
+            MouseArea {
+                anchors.fill: parent
 
-            onContentWidthChanged: {
-                pinchImg.updateContentX()
-                pinchImg.updateContentY()
-            }
-            onContentHeightChanged: {
-                pinchImg.updateContentX()
-                pinchImg.updateContentY()
-            }
-
-            Image {
-                id: img
-                width: (fitsVertically) ? (imgController.height * imgRatio) : imgController.width
-                height: (fitsVertically) ? (imgController.height) : (imgController.width / imgRatio)
-
-                property int imgWidth: isVideo ? videoThumbnailSize : (info.available ? info.metaData.width : -1)
-                property int imgHeight: isVideo ? videoThumbnailSize : (info.available ? info.metaData.height : -1)
-                property real imgRatio: imgWidth / imgHeight
-                property bool fitsVertically: imgRatio < (imgContainer.width / imgContainer.height)
-
-                //DocumentGalleryItem automatically recognizes the rootType of the file
-                DocumentGalleryItem {
-                    id: info
-                    item: galleryModel.get(index).itemId
-                    autoUpdate: true
-                    properties: ["width", "height", "url"]
+                //this is only called when img.scale != 1
+                //----> WARNING!!!: this causes a problem! double-press will call the zoomIn/Out function, while only
+                //doubleCLICK will stop the toolbarTimer in ImagePage! So if you double-press (and keep it pressed)
+                //both the zoomIn/Out function will be called and the toolBar in ImagePage will show/hide!!
+                //TODO: look for a way to fix this
+                onClicked: {
+                    imgContainer.clickedWhileZoomed()
                 }
 
-                transformOrigin: Item.TopLeft
-                asynchronous: true
-                source: isVideo ? "qrc:/images/DefaultVideoThumbnail.jpg" : galleryModel.get(index).url
-                sourceSize.width: 1200
+                onPressed: {
+                    //setting mouse.accepted to false means we'll only receive the onPressed of this event,
+                    //the rest will be propagated to the area underneath
+                    //if img.scale == 1 send events underneath, otherwise emit the signal (to make it
+                    //propagate beyond the Flickable parent)
+                    if (img.scale == 1) mouse.accepted = false
 
-                //Disable ListView scrolling if you're zooming
-                onScaleChanged: {
-                    if (scale != 1 && imgController.flickAreaEnabled == true) imgController.flickAreaEnabled = false
-                    else if (scale == 1 && imgController.flickAreaEnabled == false) imgController.flickAreaEnabled = true
-                }
-
-                MouseArea {
-                    anchors.fill: parent
-
-                    onClicked: {
-                        if (!isVideo) {
-                            if (imgController.doubleClickTimer.running) resetZoom()
-                            else imgController.doubleClickTimer.start()
+                    if (!isVideo) {
+                        if (doubleClickTimer.running) {
+                            if (img.scale != 1) {
+                                pinchingController.resetZoom()
+                            }
+                            //TODO: IMPLEMENT ZOOM-IN VIA DOUBLECLICK IN THE ELSE BRANCH
+                            //something like pinchingController.zoomIn()
                         }
+                        else doubleClickTimer.start()
                     }
+                    else showVideoPlayer()
                 }
             }
         }
