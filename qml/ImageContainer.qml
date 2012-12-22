@@ -45,7 +45,6 @@ Item {
     property int doubleClickInterval: 350
     property alias image: img
     property int videoThumbnailSize: 480
-
     //this is to trick the statusBar, so that when it shows the imageContainer isn't moved downwards
     y: -(height - parent.height - appWindow.pageStack.toolBar.height)
 
@@ -70,7 +69,6 @@ Item {
     Flickable {
         id: flickImg
 
-        clip: true
         interactive: img.scale > 1
 
         anchors.centerIn: parent
@@ -137,8 +135,10 @@ Item {
                             if (img.scale != 1) {
                                 pinchingController.resetZoom()
                             }
-                            //TODO: IMPLEMENT ZOOM-IN VIA DOUBLECLICK IN THE ELSE BRANCH
-                            //something like pinchingController.zoomIn()
+                            else {
+                                var point = mapToItem(imgContainer, mouse.x, mouse.y)
+                                pinchingController.quickZoomIn(point.x, point.y, 2.5)
+                            }
                         }
                         else doubleClickTimer.start()
                     }

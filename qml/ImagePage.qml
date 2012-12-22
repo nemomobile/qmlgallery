@@ -38,6 +38,7 @@ Page {
     anchors.fill: parent
 
     tools: imgTools
+    clip: true
 
     property variant galleryModel
     property real firstPressX
@@ -50,7 +51,6 @@ Page {
     property variant middle: three
     property variant rightMiddle: four
     property variant rightMost: five
-
     property bool videoPlayerRequested: false
 
     //this is the index which has to be passed as a parameter when creating this page
