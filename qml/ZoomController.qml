@@ -51,6 +51,13 @@ PinchArea {
     property bool initializedX: false
     property bool initializedY: false
     property bool isZoomingOut: false
+    property real middleQuickZoomInContentX: 0
+    property real middleQuickZoomInContentY: 0
+    property real middleQuickZoomInScale: 1.0
+    property real finalQuickZoomInContentX: 0
+    property real finalQuickZoomInContentY: 0
+    property real finalQuickZoomInScale: 1.0
+    property bool needsCenteringAnimation: false
 
     function resetZoom() {
         //resetting all variables related to pinch-to-zoom
@@ -60,6 +67,58 @@ PinchArea {
         deltaX = deltaY = 0
         lastScaleX = lastScaleY = 1
         isZoomingOut = false
+    }
+
+    //quickZoomIn works in 2 phases:
+    //1) zoom image (until it fills screen in case we're going to execute phase 2 too)
+    //2) (ONLY IF the requested scale factor exceeds the screen-filling scale factor) Zoom again centered on the finger position
+    function quickZoomIn(centerX, centerY, finalScale) {
+        //TODO: this needs to be updated when we decide how to get the original size of an image
+        var imgRatio = pinchTarget.implicitWidth / pinchTarget.implicitHeight
+        var fitsVertically = imgRatio < (targetContainer.width / targetContainer.height)
+
+        //the scaling factor needed to make the image fill the screen
+        middleQuickZoomInScale = (fitsVertically ? screen.platformWidth : screen.platformHeight) / (fitsVertically ? pinchTarget.width : pinchTarget.height)
+
+        //if we don't need the image to fill the screen
+        if (middleQuickZoomInScale > finalScale) middleQuickZoomInScale = finalScale
+
+        if (fitsVertically) {
+            middleQuickZoomInContentX = 0
+            middleQuickZoomInContentY = (centerY * middleQuickZoomInScale) - centerY
+            needsCenteringAnimation = (pinchTarget.width * finalScale) > screen.platformWidth
+        }
+        else {
+            middleQuickZoomInContentX = (centerX * middleQuickZoomInScale) - centerX
+            middleQuickZoomInContentY = 0
+            needsCenteringAnimation = (pinchTarget.height * finalScale) > screen.platformHeight
+        }
+
+        if (needsCenteringAnimation) {
+            finalQuickZoomInScale = finalScale
+            var remainingScaleFactorX = finalQuickZoomInScale / (screen.platformWidth / pinchTarget.width)
+            var remainingScaleFactorY = finalQuickZoomInScale / (screen.platformHeight / pinchTarget.height)
+            finalQuickZoomInContentX = (centerX * remainingScaleFactorX) - centerX
+            finalQuickZoomInContentY = (centerY * remainingScaleFactorY) - centerY
+        }
+        quickZoomInScalingAnimation.start()
+    }
+
+    //first scale the image so that it fills the screen
+    ParallelAnimation {
+        id: quickZoomInScalingAnimation
+        NumberAnimation {target: pinchTarget; property: "scale"; to: middleQuickZoomInScale; duration: 100}
+        NumberAnimation {target: connectedFlickable; property: "contentX"; to: middleQuickZoomInContentX; duration: 100}
+        NumberAnimation {target: connectedFlickable; property: "contentY"; to: middleQuickZoomInContentY; duration: 100}
+        onCompleted: if (needsCenteringAnimation) quickZoomInCenteringAnimation.start()
+    }
+
+    //then create zoom effect centered on the doubleclick coordinates (IF NEEDED)
+    ParallelAnimation {
+        id: quickZoomInCenteringAnimation
+        NumberAnimation {target: pinchTarget; property: "scale"; to: finalQuickZoomInScale; duration: 100}
+        NumberAnimation {target: connectedFlickable; property: "contentX"; to: finalQuickZoomInContentX; duration: 100}
+        NumberAnimation {target: connectedFlickable; property: "contentY"; to: finalQuickZoomInContentY; duration: 100}
     }
 
     function updateContentX() {
@@ -84,7 +143,6 @@ PinchArea {
                     deltaX = connectedFlickable.contentX + parent.width
                     lastScaleX = pinchTarget.scale
                 }
-
                 connectedFlickable.contentX = (lastContentX + deltaX * ((pinchTarget.scale / lastScaleX) - 1.0 ))
             }
         }
