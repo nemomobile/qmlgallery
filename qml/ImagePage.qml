@@ -188,6 +188,13 @@ Page {
         onPressedWhileNotZoomed: if (middle.isVideo) videoPlayerRequested = true
     }
 
+    Timer {
+        id: toolbarAutohideTimer
+        interval: 2500
+        running: !appWindow.fullscreen && (pageMenu.status === DialogStatus.Closed)
+        onTriggered: appWindow.fullscreen = true
+    }
+
     MouseArea {
         id: listFlickable
         anchors.fill: parent

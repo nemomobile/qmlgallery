@@ -69,6 +69,13 @@ Page {
         onClickedWhileZoomed: fullScreenModeArea.handleClick()
     }
 
+    Timer {
+        id: toolbarAutohideTimer
+        interval: 2500
+        running: !appWindow.fullscreen
+        onTriggered: appWindow.fullscreen = true
+    }
+    
     MouseArea {
         id: fullScreenModeArea
         anchors.fill: parent
