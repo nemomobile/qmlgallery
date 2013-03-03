@@ -10,16 +10,6 @@ Sources:
 Description: Photo Gallery application using Qt Quick for Nemo Mobile.
 Configure: none
 Builder: qmake
-
-# These are the flags QtSDK sets for Harmattan
-# we want to keep both QtSDK harmattan and Nemo build as close as possible
-# so we define the same flags
-QMakeOptions:
-    - "MEEGO_VERSION_MAJOR=1"
-    - "MEEGO_VERSION_MINOR=2"
-    - "MEEGO_VERSION_PATCH=0"
-    - "MEEGO_EDITION=harmattan"
-    - "DEFINES+=MEEGO_EDITION_HARMATTAN"
 Obsoletes:
     - meego-handset-video <= 0.2.5
 Provides:

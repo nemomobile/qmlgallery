@@ -44,12 +44,7 @@ Photo Gallery application using Qt Quick for Nemo Mobile.
 # >> build pre
 # << build pre
 
-%qmake  \
-    MEEGO_VERSION_MAJOR=1 \
-    MEEGO_VERSION_MINOR=2 \
-    MEEGO_VERSION_PATCH=0 \
-    MEEGO_EDITION=harmattan \
-    DEFINES+=MEEGO_EDITION_HARMATTAN
+%qmake 
 
 make %{?jobs:-j%jobs}
 
