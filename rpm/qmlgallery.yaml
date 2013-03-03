@@ -1,0 +1,44 @@
+Name:  qmlgallery
+Summary: Photo Gallery for Nemo
+Version: 0.0.10
+Release: 1
+Group: Applications/System
+License: BSD
+URL:        https://github.com/nemomobile/qmlgallery
+Sources:
+    - "%{name}-%{version}.tar.bz2"
+Description: Photo Gallery application using Qt Quick for Nemo Mobile.
+Configure: none
+Builder: qmake
+
+# These are the flags QtSDK sets for Harmattan
+# we want to keep both QtSDK harmattan and Nemo build as close as possible
+# so we define the same flags
+QMakeOptions:
+    - "MEEGO_VERSION_MAJOR=1"
+    - "MEEGO_VERSION_MINOR=2"
+    - "MEEGO_VERSION_PATCH=0"
+    - "MEEGO_EDITION=harmattan"
+    - "DEFINES+=MEEGO_EDITION_HARMATTAN"
+Obsoletes:
+    - meego-handset-video <= 0.2.5
+Provides:
+    - meego-handset-video > 0.2.5
+
+PkgConfigBR:
+    - QtCore >= 4.7.0
+    - QtDeclarative
+    - QtGui
+    - qdeclarative-boostable
+    - QtOpenGL
+    - libresourceqt1
+Requires:
+    - libdeclarative-gallery
+    - libdeclarative-multimedia
+    - nemo-qml-plugins-thumbnailer
+ 
+Files:
+    - "%{_bindir}/qmlgallery"
+    - "%{_datadir}/applications/qmlgallery.desktop"
+    - "%{_libdir}/qt4/imports/org/nemomobile/qmlgallery/*"
+
