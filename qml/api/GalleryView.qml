@@ -30,7 +30,7 @@
  */
 
 import QtQuick 1.1
-import com.nokia.meego 1.0
+import com.nokia.meego 1.2
 import org.nemomobile.thumbnailer 1.0
 
 GridView {
@@ -72,20 +72,8 @@ GridView {
         onCurrentOrientationChanged: updateThumbnailSize()
     }
 
-    Text {
-        id: noElementsFoundText
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.leftMargin: 20
-        anchors.rightMargin: 20
-
-        visible: parent.model.count == 0 && parent.model.progress == 1.0
-
+    ViewPlaceholder {
         text: "No elements found..."
-        color: "lightgrey"
-        font.pointSize: 26
-        horizontalAlignment: Text.AlignHCenter
-        wrapMode: Text.WordWrap
+        enabled: parent.model.count == 0 && parent.model.progress == 1.0
     }
 }

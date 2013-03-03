@@ -16,6 +16,7 @@ License:    BSD
 URL:        https://github.com/nemomobile/qmlgallery
 Source0:    %{name}-%{version}.tar.bz2
 Source100:  qmlgallery.yaml
+Requires:   qt-components >= 1.4.8
 Requires:   libdeclarative-gallery
 Requires:   libdeclarative-multimedia
 Requires:   nemo-qml-plugins-thumbnailer

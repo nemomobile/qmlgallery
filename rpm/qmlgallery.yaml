@@ -33,6 +33,7 @@ PkgConfigBR:
     - QtOpenGL
     - libresourceqt1
 Requires:
+    - qt-components >= 1.4.8
     - libdeclarative-gallery
     - libdeclarative-multimedia
     - nemo-qml-plugins-thumbnailer
