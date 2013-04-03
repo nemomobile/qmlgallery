@@ -1,0 +1,77 @@
+* Sun Mar 03 2013 Robin Burchell <robin+mer@viroteck.net> - 0.1.0
+- Fixes NEMO#498: Slideshow mode is greyed out if there are no elements (from Andrea)
+- Fixes NEMO#402: Exiting slideshow mode doesn't change the index of the displayed element (from Andrea)
+- Fixes NEMO#397: Fullscreen mode can now be enabled/disabled in all cases (from Andrea)
+- Fixes NEMO#196: gallery handles external images/videos (from Andrea)
+- Fixes NEMO#404: Added doubletap to zoom (from Andrea)
+- Fixes NEMO#218: Toolbar and statusbar now autohide (from Andrea)
+- Refactor pinch zoom logic (from Andrea)
+- Remove useless Item (from Andrea)
+- Restructure mouse handling (from Andrea)
+- Allow ImageContainer to work without the gallery model (from Andrea)
+- Don't resize the image when toggling fullscreen mode (from Andrea)
+- Make toolbar semi-transparent (from Andrea)
+- Add packaging to git repository (from Robin)
+- Use unified empty state view (from Robin)
+- Tidy up packaging a bit (from Robin)
+
+* Sat Oct 27 2012 John Brooks <john.brooks@dereferenced.net> - 0.0.10
+- Add missing dependency for libdeclarative-multimedia, reported by Tuomas Kulve
+
+* Sun Sep 09 2012 John Brooks <john.brooks@dereferenced.net> - 0.0.10
+- Fixes NEMO#258: Sorting by file name and file type (from Ari Silen)
+- Improve UI text for sorting and filtering
+- Acquire video playback resources with libresourceqt
+
+* Wed Aug 29 2012 Andrea Bernabei <and.bernabei@gmail.com> - 0.0.9
+- Fixes NEMO#260: Feature: videos to the gallery
+- Fixes NEMO#412: Add possibility to show only videos or only pictures
+- Fixes NEMO#400: Rotating photos is printing extra messages to .xsession-errors
+- Fixes .desktop file (part of NEMO#407)
+
+* Mon Aug 27 2012 Marko Saukko <marko.saukko@jollamobile.com> - 0.0.8
+- Provide/Obsolete meego-handset-video
+
+* Fri Aug 24 2012 John Brooks <john.brooks@dereferenced.net> - 0.0.8
+- Fixes NEMO#363: Only one instance of gallery should be started
+- Use desktop file from source rather than obs
+- Display name of the menu entry *actually* changed from qmlgallery to Gallery
+
+* Mon Aug 20 2012 John Brooks <john.brooks@dereferenced.net> - 0.0.8
+- Fixes NEMO#191: No way to refresh gallery
+- Fixes NEMO#238: Support formats other than JPEG
+- Fixes NEMO#186: If no images are available tell user about it
+- Fixes NEMO#231: Flipping orientation in full image view can change image
+- Display name of the menu entry changed from qmlgallery to Gallery
+- Fixes NEMO#192: Slideshow feature for gallery
+- Fixes NEMO#252: Not possible to determine position in the gallery when scrolling
+- Fixes NEMO#185 : Unable to show photos full screen
+
+* Tue Jul 24 2012 Robin Burchell <robin+mer@viroteck.net> - 0.0.7
+- Remove Symbian & Harmattan stuff that isn't needed
+- Don't install useless icon
+- Replace qmlapplicationviewer with the same launcher as elsewhere
+- Fixes NEMO#254: Gallery needs to offer UI components for system reuse
+
+* Sun Jul 22 2012 Robin Burchell <robin+mer@viroteck.net> - 0.0.6
+- Remove embedded thumbnailer code, use the nemo plugin
+
+* Sun Jul 22 2012 Robin Burchell <robin+mer@viroteck.net> - 0.0.5
+- Fixes NEMO#235: Glitch on transition to landscape
+- Fixes NEMO#232: When exiting the full image view, the zoom factor
+  should be reset (optionally animated)
+- Fixes NEMO#212: Landscape layout needs some work
+- Fixes NEMO#189: Add small padding between images
+- Add double tap to zoom out of an image when in full image view
+- Add a toolbar on the main page, currently only for asthetic reasons
+
+* Sat Jul 21 2012 Robin Burchell <robin+mer@viroteck.net> - 0.0.4
+- Set attributes to minimise drawing overhead & reduce flicker on startup
+- Fix NEMO#213 - Errant images displayed in transition to ImagePage (patch from John)
+- Fix jittering during pinch-to-zoom (patch from John)
+
+* Thu Feb 23 2012 Marko Saukko <marko.saukko@gmail.com> - 0.0.2
+- Version 0.0.2 that contains thumbnailing.
+
+* Thu Feb 16 2012 Vesa-Matti Hartikainen <vesa-matti.hartikainen@nokia.com> - 0.0.1
+- Initial release for Nemo 0.0.1

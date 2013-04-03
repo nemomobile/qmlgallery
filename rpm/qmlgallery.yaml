@@ -4,10 +4,9 @@ Version: 0.1.0
 Release: 1
 Group: Applications/System
 License: BSD
-URL:        https://github.com/nemomobile/qmlgallery
+URL: https://github.com/nemomobile/qmlgallery
 Sources:
 - "%{name}-%{version}.tar.bz2"
-SetupOptions: -q -n %{name}
 Description: Photo Gallery application using Qt Quick for Nemo Mobile.
 Configure: none
 Builder: qmake

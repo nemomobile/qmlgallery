@@ -35,7 +35,7 @@ Photo Gallery application using Qt Quick for Nemo Mobile.
 
 
 %prep
-%setup -q -n %{name}
+%setup -q -n %{name}-%{version}
 
 # >> setup
 # << setup
