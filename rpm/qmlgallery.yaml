@@ -26,7 +26,7 @@ Requires:
     - qt-components >= 1.4.8
     - libdeclarative-gallery
     - libdeclarative-multimedia
-    - nemo-qml-plugins-thumbnailer
+    - nemo-qml-plugin-thumbnailer
  
 Files:
     - "%{_bindir}/qmlgallery"
