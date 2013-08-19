@@ -29,7 +29,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
  */
 
-import QtQuick 1.1
+import QtQuick 2.0
 
 PinchArea {
     anchors.fill: parent
@@ -110,7 +110,7 @@ PinchArea {
         NumberAnimation {target: pinchTarget; property: "scale"; to: middleQuickZoomInScale; duration: 100}
         NumberAnimation {target: connectedFlickable; property: "contentX"; to: middleQuickZoomInContentX; duration: 100}
         NumberAnimation {target: connectedFlickable; property: "contentY"; to: middleQuickZoomInContentY; duration: 100}
-        onCompleted: if (needsCenteringAnimation) quickZoomInCenteringAnimation.start()
+        onStopped: if (needsCenteringAnimation) quickZoomInCenteringAnimation.start()
     }
 
     //then create zoom effect centered on the doubleclick coordinates (IF NEEDED)

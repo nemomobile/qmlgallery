@@ -9,27 +9,26 @@ Sources:
 - "%{name}-%{version}.tar.bz2"
 Description: Photo Gallery application using Qt Quick for Nemo Mobile.
 Configure: none
-Builder: qmake
+Builder: qmake5
 Obsoletes:
     - meego-handset-video <= 0.2.5
 Provides:
     - meego-handset-video > 0.2.5
 
 PkgConfigBR:
-    - QtCore >= 4.7.0
-    - QtDeclarative
-    - QtGui
-    - qdeclarative-boostable
-    - QtOpenGL
-    - libresourceqt1
+    - Qt5Core
+    - Qt5Quick
+    - Qt5Gui
+    - qdeclarative5-boostable
+    - libresourceqt5
 Requires:
-    - qt-components >= 1.4.8
-    - libdeclarative-gallery
-    - libdeclarative-multimedia
-    - nemo-qml-plugin-thumbnailer
+    - qt-components-qt5
+    - qt5-qtdeclarative-import-multimedia
+    - nemo-qml-plugin-thumbnailer-qt5
+    - qt5-qtdocgallery
  
 Files:
     - "%{_bindir}/qmlgallery"
     - "%{_datadir}/applications/qmlgallery.desktop"
-    - "%{_libdir}/qt4/imports/org/nemomobile/qmlgallery/*"
+    - "%{_libdir}/qt5/qml/org/nemomobile/qmlgallery/*"
 

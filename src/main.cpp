@@ -29,11 +29,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
  */
 
-#include <QApplication>
-#include <QDeclarativeView>
+#include <QGuiApplication>
+#include <QQuickView>
 #include "src/gallery.h"
 #ifdef HAS_BOOSTER
-#include <applauncherd/MDeclarativeCache>
+#include <MDeclarativeCache>
 #endif
 
 #ifdef HAS_BOOSTER
@@ -41,15 +41,15 @@ Q_DECL_EXPORT
 #endif
 int main(int argc, char **argv)
 {
-    QApplication *application;
-    QDeclarativeView *view;
+    QGuiApplication *application;
+    QQuickView *view;
 #ifdef HAS_BOOSTER
     application = MDeclarativeCache::qApplication(argc, argv);
-    view = MDeclarativeCache::qDeclarativeView();
+    view = MDeclarativeCache::qQuickView();
 #else
     qWarning() << Q_FUNC_INFO << "Warning! Running without booster. This may be a bit slower.";
-    QApplication stackApp(argc, argv);
-    QDeclarativeView stackView;
+    QGuiApplication stackApp(argc, argv);
+    QQuickView stackView;
     application = &stackApp;
     view = &stackView;
 #endif

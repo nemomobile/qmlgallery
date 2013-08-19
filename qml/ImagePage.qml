@@ -29,9 +29,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
  */
 
-import QtQuick 1.1
-import com.nokia.meego 1.0
-import QtMobility.gallery 1.1
+import QtQuick 2.0
+import com.nokia.meego 2.0
+import QtDocGallery 5.0
 
 Page {
     id: imageController
@@ -148,7 +148,7 @@ Page {
         duration: 300;
         easing.type: Easing.OutQuad
         onStarted: keepMiddleItemAligned = false
-        onCompleted: {
+        onStopped: {
             if (Math.abs(to - from) > swipeThreshold) {
                 if (from > to )
                     swapLeftMost()
