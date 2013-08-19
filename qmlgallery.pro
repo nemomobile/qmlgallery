@@ -1,9 +1,9 @@
 PROJECT_NAME = qmlgallery
-QT += declarative opengl
+QT += qml quick
 
 # qml API we provide
 qml_api.files = qml/api/*
-qml_api.path = $$[QT_INSTALL_IMPORTS]/org/nemomobile/$$PROJECT_NAME
+qml_api.path = $$[QT_INSTALL_QML]/org/nemomobile/$$PROJECT_NAME
 INSTALLS += qml_api
 
 target.path = $$INSTALL_ROOT/usr/bin
@@ -25,12 +25,12 @@ CONFIG -= app_bundle
 TARGET = $$PROJECT_NAME
 
 CONFIG += link_pkgconfig
-PKGCONFIG += libresourceqt1
+PKGCONFIG += libresourceqt5
 
-packagesExist(qdeclarative-boostable) {
-    message("Building with qdeclarative-boostable support")
+packagesExist(qdeclarative5-boostable) {
+    message("Building with qdeclarative5-boostable support")
     DEFINES += HAS_BOOSTER
-    PKGCONFIG += qdeclarative-boostable
+    PKGCONFIG += qdeclarative5-boostable
 } else {
-    warning("qdeclarative-boostable not available; startup times will be slow er")                                                                         
+    warning("qdeclarative5-boostable not available; startup times will be slower")
 }

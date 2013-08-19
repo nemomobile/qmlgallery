@@ -29,47 +29,33 @@
  */
 
 #include "gallery.h"
-#include <QDeclarativeView>
-#include <QDeclarativeEngine>
-#include <QDeclarativeContext>
-#include <QApplication>
+#include <QQuickView>
+#include <QtQml>
+#include <QGuiApplication>
 #include <QDir>
-#include <QGLWidget>
 #include <QDebug>
 #include <QFile>
 #include <QFileInfo>
-#include <QMetaObject>
-#include <QGraphicsObject>
 #include <QUrl>
+#include <QQuickItem>
 #include <QImageReader>
 
-Gallery::Gallery(QDeclarativeView *v, QObject *parent)
+Gallery::Gallery(QQuickView *v, QObject *parent)
     : QObject(parent), view(v)
 {
     QFile fileToOpen;
     bool isFullscreen = false;
-    bool glwidget = true;
     foreach (QString parameter, qApp->arguments()) {
         if (parameter == "-fullscreen") {
             isFullscreen = true;
         } else if (parameter == "-help") {
             qDebug() << "Gallery application";
             qDebug() << "-fullscreen   - show QML fullscreen";
-            qDebug() << "-no-glwidget  - Don't use QGLWidget viewport";
             exit(0);
-        } else if (parameter == "-no-glwidget") {
-            glwidget = false;
         } else if (parameter != qApp->arguments().first() && !fileToOpen.exists()) {
             fileToOpen.setFileName(parameter);
         }
     }
-
-    // See NEMO#415 for an explanation of why this may be necessary.
-    if (glwidget)
-        view->setViewport(new QGLWidget);
-    else
-        qDebug() << "Not using QGLWidget viewport";
-
     QObject::connect(view->engine(), SIGNAL(quit()), qApp, SLOT(quit()));
     view->rootContext()->setContextProperty("gallery", this);
 
@@ -85,11 +71,6 @@ Gallery::Gallery(QDeclarativeView *v, QObject *parent)
     else
         view->setSource(QUrl("qrc:/qml/main.qml"));
 
-    view->setAttribute(Qt::WA_OpaquePaintEvent);
-    view->setAttribute(Qt::WA_NoSystemBackground);
-    view->viewport()->setAttribute(Qt::WA_OpaquePaintEvent);
-    view->viewport()->setAttribute(Qt::WA_NoSystemBackground);
-
     if (isFullscreen)
         view->showFullScreen();
     else
@@ -100,7 +81,8 @@ Gallery::Gallery(QDeclarativeView *v, QObject *parent)
             QFileInfo fileInfo(fileToOpen);
             QUrl fileUrl = QUrl::fromLocalFile(fileInfo.absoluteFilePath());
             if (view->rootObject()) {
-                QMetaObject::invokeMethod(view->rootObject(), "displayFile", Q_ARG(QVariant, QVariant(fileUrl.toString())));
+                QObject *rootobj = view->rootObject();
+                QMetaObject::invokeMethod(rootobj, "displayFile", Q_ARG(QVariant, QVariant(fileUrl.toString())));
             }
         } else {
             qDebug() << "File " << fileToOpen.fileName() << " does not exist.";
@@ -116,7 +98,7 @@ void Gallery::acquireVideoResources()
 
     resources->deleteResource(ResourcePolicy::AudioPlaybackType);
     ResourcePolicy::AudioResource *audio = new ResourcePolicy::AudioResource("player");
-    audio->setProcessID(QApplication::applicationPid());
+    audio->setProcessID(QGuiApplication::applicationPid());
     audio->setStreamTag("media.name", "*");
     resources->addResourceObject(audio);
 

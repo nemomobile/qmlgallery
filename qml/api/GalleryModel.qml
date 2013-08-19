@@ -28,8 +28,8 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
  */
-import QtQuick 1.1
-import QtMobility.gallery 1.1
+import QtQuick 2.0
+import QtDocGallery 5.0
 
 DocumentGalleryModel {
     id: gallery
@@ -51,14 +51,14 @@ DocumentGalleryModel {
 
     //this is to create single filters dynamically
     function createFilter(parentItem, name, filterType, keyToFilter, value){
-        var myFilter = Qt.createQmlObject('import QtMobility.gallery 1.1;' + filterType + '{property: "' +keyToFilter + '"; value: "' + value + '" }',
+        var myFilter = Qt.createQmlObject('import QtDocGallery 5.0;' + filterType + '{property: "' +keyToFilter + '"; value: "' + value + '" }',
                                       parentItem, name);
         return myFilter
     }
 
     //this is to create group filters, such as union and intersection ones
     function createFiltersArray(parentItem, name, filterType, filtersArray){
-        var myFilter = Qt.createQmlObject('import QtMobility.gallery 1.1;' + filterType + '{ }',
+        var myFilter = Qt.createQmlObject('import QtDocGallery 5.0;' + filterType + '{ }',
                                       parentItem, name);
         myFilter.filters = filtersArray
         return myFilter

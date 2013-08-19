@@ -34,7 +34,7 @@
 #include <QObject>
 #include <policy/resource-set.h>
 
-class QDeclarativeView;
+class QQuickView;
 class QString;
 
 class Gallery : public QObject
@@ -42,7 +42,7 @@ class Gallery : public QObject
     Q_OBJECT
 
 public:
-    Gallery(QDeclarativeView *view, QObject *parent = 0);
+    Gallery(QQuickView *v, QObject *parent = 0);
 
 public slots:
     void acquireVideoResources();
@@ -55,7 +55,7 @@ private slots:
     void lostResources();
 
 private:
-    QDeclarativeView *view;
+    QQuickView *view;
     ResourcePolicy::ResourceSet *resources;
 };
 
