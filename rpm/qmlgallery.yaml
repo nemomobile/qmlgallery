@@ -26,6 +26,7 @@ Requires:
     - qt5-qtdeclarative-import-multimedia
     - nemo-qml-plugin-thumbnailer-qt5
     - qt5-qtdocgallery
+    - mapplauncherd-booster-qtcomponents-qt5
  
 Files:
     - "%{_bindir}/qmlgallery"
