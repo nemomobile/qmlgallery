@@ -20,6 +20,7 @@ Requires:   qt-components-qt5
 Requires:   qt5-qtdeclarative-import-multimedia
 Requires:   nemo-qml-plugin-thumbnailer-qt5
 Requires:   qt5-qtdocgallery
+Requires:   mapplauncherd-booster-qtcomponents-qt5
 BuildRequires:  pkgconfig(Qt5Core)
 BuildRequires:  pkgconfig(Qt5Quick)
 BuildRequires:  pkgconfig(Qt5Gui)
