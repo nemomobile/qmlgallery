@@ -4,7 +4,7 @@ Type=Application
 Terminal=false
 Name=Gallery
 Exec=/usr/bin/invoker --single-instance -r 5 --type=qtcomponents-qt5 /usr/bin/qmlgallery -fullscreen %u
-Icon=icons-Applications-photos
+Icon=icon-app-gallery
 X-Window-Icon=
 X-HildonDesk-ShowInToolbar=true
 X-Osso-Type=application/x-executable
